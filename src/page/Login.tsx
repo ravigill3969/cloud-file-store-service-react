@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { Link } from "react-router";
+import { useLogin } from "@/api/auth";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -18,12 +19,12 @@ const Login = () => {
     }));
   };
 
+  const { mutate } = useLogin();
+
   const handleSubmit = async () => {
     setIsLoading(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    console.log("Registration data:", formData);
+    mutate(formData);
     setIsLoading(false);
   };
 
