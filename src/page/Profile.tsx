@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
-
   User,
   Edit3,
   Shield,
@@ -21,6 +20,8 @@ import {
   Crown,
 } from "lucide-react";
 import Nav from "@/components/Nav";
+import type { GETUserData } from "@/api/APItypes";
+import { useGetUserInfo } from "@/api/auth";
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState("profile");
@@ -29,22 +30,24 @@ export default function Profile() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // User data (mock data based on the schema)
-  const [userData, setUserData] = useState({
-    uuid: "123e4567-e89b-12d3-a456-426614174000",
-    username: "john_developer",
-    email: "john@example.com",
-    account_type: "premium",
-    post_api_calls: 1250,
-    get_api_calls: 8930,
-    edit_api_calls: 345,
-    created_at: "2024-01-15T10:30:00Z",
+  const [userData, setUserData] = useState<GETUserData | undefined>();
+
+  const { data } = useGetUserInfo();
+
+  const [profileForm, setProfileForm] = useState({
+    username: "",
+    email: "",
   });
 
-  // Form states
-  const [profileForm, setProfileForm] = useState({
-    username: userData.username,
-    email: userData.email,
-  });
+  useEffect(() => {
+    if (data && data.data.length === 1) {
+      setUserData(data.data[0]);
+      setProfileForm({
+        email: data.data[0].email,
+        username: data.data[0].email,
+      });
+    }
+  }, [data]);
 
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
@@ -75,12 +78,6 @@ export default function Profile() {
 
     // Simulate API call
     setTimeout(() => {
-      setUserData((prev) => ({
-        ...prev,
-        username: profileForm.username,
-        email: profileForm.email,
-      }));
-
       //   setAlerts((prev) => ({
       //     ...prev,
       //     profile: { type: "success", message: "Profile updated successfully!" },
@@ -160,6 +157,9 @@ export default function Profile() {
     );
   };
 
+  if (!userData) {
+    return <div>wtf</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">

@@ -1,14 +1,39 @@
 import { Button } from "@/components/ui/button";
-import { Menu, X, Home, Settings, Key, Zap } from "lucide-react";
+import {
+  Menu,
+  X,
+  Home,
+  Settings,
+  Key,
+  Zap,
+  LogOut,
+  Crown,
+  ArrowRight,
+} from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { Link } from "react-router";
 
 export default function Nav() {
-  const [isNavOpen, setIsNavOpen] = useState(false);
+  const [isNavOpen, setIsNavOpen] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(true); // Default to false for better UX
 
   const toggleNav = () => setIsNavOpen(!isNavOpen);
 
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+    toast.success("Logged in successfully!");
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    toast.success("Logged out successfully!");
+  };
+
+  const handleUpgrade = () => {
+    // Replace with your toast notification
+    console.log("Coming soon");
+  };
   return (
     <nav className="bg-white/80 backdrop-blur-md shadow-lg border-b border-indigo-100 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -24,10 +49,11 @@ export default function Nav() {
             </div>
           </div>
 
+          {/* Desktop Navigation */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-4">
               <Button
-                onClick={() => toast.success("coming soon")}
+                onClick={() => toast.success("Coming soon")}
                 variant="ghost"
                 className="text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
               >
@@ -35,7 +61,7 @@ export default function Nav() {
                 Dashboard
               </Button>
               <Button
-                onClick={() => toast.success("coming soon")}
+                onClick={() => toast.success("Coming soon")}
                 variant="ghost"
                 className="text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
               >
@@ -43,7 +69,7 @@ export default function Nav() {
                 API Keys
               </Button>
               <Button
-                onClick={() => toast.success("coming soon")}
+                onClick={() => toast.success("Coming soon")}
                 variant="ghost"
                 className="text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
               >
@@ -53,20 +79,51 @@ export default function Nav() {
             </div>
           </div>
 
+          {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-3">
-            <Link to={"/login"}>
-              <Button
-                variant="outline"
-                className="text-indigo-600 border-indigo-200 hover:bg-indigo-50"
-              >
-                Login
-              </Button>
-            </Link>
-            <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg">
-              Get Started
-            </Button>
+            {isLoggedIn ? (
+              <>
+                <Button
+                  onClick={handleUpgrade}
+                  className="relative group overflow-hidden bg-gradient-to-r from-gray-900 via-gray-800 to-black hover:from-gray-800 hover:via-gray-700 hover:to-gray-900 text-white font-semibold px-8 py-6 rounded-2xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-gray-900/25 border border-gray-700 hover:border-gray-600"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <Link to={"/subscription"}>
+                    <div className="relative flex items-center gap-3">
+                      <Crown className="w-5 h-5 text-yellow-400" />
+                      <span className="text-lg">Upgrade</span>
+                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                    </div>
+                  </Link>
+                </Button>
+                <Button
+                  onClick={handleLogout}
+                  variant="outline"
+                  className="text-red-600 border-red-200 hover:bg-red-50"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button
+                    onClick={handleLogin}
+                    variant="outline"
+                    className="text-indigo-600 border-indigo-200 hover:bg-indigo-50"
+                  >
+                    Login
+                  </Button>
+                </Link>
+                <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg">
+                  Get Started
+                </Button>
+              </>
+            )}
           </div>
 
+          {/* Mobile menu button */}
           <div className="md:hidden">
             <Button variant="ghost" size="sm" onClick={toggleNav}>
               {isNavOpen ? (
@@ -78,10 +135,12 @@ export default function Nav() {
           </div>
         </div>
 
+        {/* Mobile Navigation */}
         {isNavOpen && (
           <div className="md:hidden border-t border-indigo-100">
             <div className="px-2 pt-2 pb-3 space-y-1">
               <Button
+                onClick={() => toast.success("Coming soon")}
                 variant="ghost"
                 className="w-full justify-start text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
               >
@@ -89,6 +148,7 @@ export default function Nav() {
                 Dashboard
               </Button>
               <Button
+                onClick={() => toast.success("Coming soon")}
                 variant="ghost"
                 className="w-full justify-start text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
               >
@@ -96,6 +156,7 @@ export default function Nav() {
                 API Keys
               </Button>
               <Button
+                onClick={() => toast.success("Coming soon")}
                 variant="ghost"
                 className="w-full justify-start text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
               >
@@ -103,18 +164,44 @@ export default function Nav() {
                 Settings
               </Button>
 
+              {/* Mobile Auth Buttons */}
               <div className="pt-2 space-y-2">
-                <Link to={"/login"}>
-                  <Button
-                    variant="outline"
-                    className="w-full text-indigo-600 border-indigo-200 hover:bg-indigo-50"
-                  >
-                    Login
-                  </Button>
-                </Link>
-                <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
-                  Get Started
-                </Button>
+                {isLoggedIn ? (
+                  <>
+                    <Link to={"/subscription"}>
+                      <Button
+                        onClick={() => toast.success("Coming soon")}
+                        variant="secondary"
+                        className="w-full justify-start text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
+                      >
+                        Upgrade
+                      </Button>
+                    </Link>
+                    <Button
+                      onClick={handleLogout}
+                      variant="outline"
+                      className="w-full text-red-600 border-red-200 hover:bg-red-50"
+                    >
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Logout
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/login">
+                      <Button
+                        onClick={handleLogin}
+                        variant="outline"
+                        className="w-full text-indigo-600 border-indigo-200 hover:bg-indigo-50"
+                      >
+                        Login
+                      </Button>
+                    </Link>
+                    <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+                      Get Started
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </div>
