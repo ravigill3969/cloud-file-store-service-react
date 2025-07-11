@@ -1,90 +1,118 @@
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Menu, X, Home, User, Settings, Mail } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Menu, X, Home, Settings, Key, Zap } from "lucide-react";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { Link } from "react-router";
 
 export default function Nav() {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isNavOpen, setIsNavOpen] = useState(false);
 
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
+  const toggleNav = () => setIsNavOpen(!isNavOpen);
 
   return (
-    <nav className="bg-white shadow-md border-b">
+    <nav className="bg-white/80 backdrop-blur-md shadow-lg border-b border-indigo-100 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <div className="flex-shrink-0">
-            <h1 className="text-xl font-bold text-gray-800">Brand</h1>
+          <div className="flex items-center">
+            <div className="flex-shrink-0 flex items-center">
+              <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-2 rounded-lg">
+                <Zap className="w-6 h-6 text-white" />
+              </div>
+              <h1 className="ml-3 text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                CloudAPI
+              </h1>
+            </div>
           </div>
 
-          {/* Desktop Navigation */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-4">
-              <Button variant="ghost" className="text-gray-700 hover:text-gray-900">
+              <Button
+                onClick={() => toast.success("coming soon")}
+                variant="ghost"
+                className="text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
+              >
                 <Home className="w-4 h-4 mr-2" />
-                Home
+                Dashboard
               </Button>
-              <Button variant="ghost" className="text-gray-700 hover:text-gray-900">
-                <User className="w-4 h-4 mr-2" />
-                About
+              <Button
+                onClick={() => toast.success("coming soon")}
+                variant="ghost"
+                className="text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
+              >
+                <Key className="w-4 h-4 mr-2" />
+                API Keys
               </Button>
-              <Button variant="ghost" className="text-gray-700 hover:text-gray-900">
+              <Button
+                onClick={() => toast.success("coming soon")}
+                variant="ghost"
+                className="text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
+              >
                 <Settings className="w-4 h-4 mr-2" />
-                Services
-              </Button>
-              <Button variant="ghost" className="text-gray-700 hover:text-gray-900">
-                <Mail className="w-4 h-4 mr-2" />
-                Contact
+                Settings
               </Button>
             </div>
           </div>
 
-          {/* Auth Buttons */}
-          <div className="hidden md:block">
-            <div className="flex items-center space-x-2">
-              <Button variant="outline" className="text-gray-700 border-gray-300 hover:bg-gray-50">
+          <div className="hidden md:flex items-center space-x-3">
+            <Link to={"/login"}>
+              <Button
+                variant="outline"
+                className="text-indigo-600 border-indigo-200 hover:bg-indigo-50"
+              >
                 Login
               </Button>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                Get Started
-              </Button>
-            </div>
+            </Link>
+            <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg">
+              Get Started
+            </Button>
           </div>
 
-          {/* Mobile menu button */}
           <div className="md:hidden">
-            <Button variant="ghost" size="sm" onClick={toggleMenu}>
-              {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            <Button variant="ghost" size="sm" onClick={toggleNav}>
+              {isNavOpen ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
             </Button>
           </div>
         </div>
 
-        {/* Mobile Navigation */}
-        {isOpen && (
-          <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t">
-              <Button variant="ghost" className="w-full justify-start text-gray-700 hover:text-gray-900">
+        {isNavOpen && (
+          <div className="md:hidden border-t border-indigo-100">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
+              >
                 <Home className="w-4 h-4 mr-2" />
-                Home
+                Dashboard
               </Button>
-              <Button variant="ghost" className="w-full justify-start text-gray-700 hover:text-gray-900">
-                <User className="w-4 h-4 mr-2" />
-                About
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
+              >
+                <Key className="w-4 h-4 mr-2" />
+                API Keys
               </Button>
-              <Button variant="ghost" className="w-full justify-start text-gray-700 hover:text-gray-900">
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
+              >
                 <Settings className="w-4 h-4 mr-2" />
-                Services
+                Settings
               </Button>
-              <Button variant="ghost" className="w-full justify-start text-gray-700 hover:text-gray-900">
-                <Mail className="w-4 h-4 mr-2" />
-                Contact
-              </Button>
+
               <div className="pt-2 space-y-2">
-                <Button variant="outline" className="w-full text-gray-700 border-gray-300 hover:bg-gray-50">
-                  Login
-                </Button>
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                <Link to={"/login"}>
+                  <Button
+                    variant="outline"
+                    className="w-full text-indigo-600 border-indigo-200 hover:bg-indigo-50"
+                  >
+                    Login
+                  </Button>
+                </Link>
+                <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
                   Get Started
                 </Button>
               </div>
