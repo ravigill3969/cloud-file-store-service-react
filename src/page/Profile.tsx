@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import Nav from "@/components/Nav";
 import type { GETUserData } from "@/api/APItypes";
-import { useGetUserInfo } from "@/api/auth";
+import { useUserContext } from "@/context/userContext";
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState("profile");
@@ -29,10 +29,9 @@ export default function Profile() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // User data (mock data based on the schema)
   const [userData, setUserData] = useState<GETUserData | undefined>();
 
-  const { data } = useGetUserInfo();
+  const apiData = useUserContext();
 
   const [profileForm, setProfileForm] = useState({
     username: "",
@@ -40,14 +39,14 @@ export default function Profile() {
   });
 
   useEffect(() => {
-    if (data && data.data.length === 1) {
-      setUserData(data.data[0]);
+    if (apiData) {
+      setUserData(apiData);
       setProfileForm({
-        email: data.data[0].email,
-        username: data.data[0].email,
+        email: apiData.email,
+        username: apiData.email,
       });
     }
-  }, [data]);
+  }, [apiData]);
 
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",

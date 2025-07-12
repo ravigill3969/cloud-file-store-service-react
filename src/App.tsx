@@ -4,6 +4,7 @@ import LoginPage from "./page/Login";
 import Home from "./page/Home";
 import Profile from "./page/Profile";
 import Subscription from "./page/Subscription";
+import { UserProvider } from "./context/userContext.tsx";
 
 const router = createBrowserRouter([
   {
@@ -31,7 +32,9 @@ const router = createBrowserRouter([
 function App() {
   return (
     <>
-      <RouterProvider router={router} />
+      <UserProvider>
+        <RouterProvider router={router} />
+      </UserProvider>
     </>
   );
 }

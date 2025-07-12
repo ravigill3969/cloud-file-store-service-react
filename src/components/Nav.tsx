@@ -16,7 +16,7 @@ import { Link } from "react-router";
 
 export default function Nav() {
   const [isNavOpen, setIsNavOpen] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // Default to false for better UX
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
 
   const toggleNav = () => setIsNavOpen(!isNavOpen);
 
@@ -31,7 +31,6 @@ export default function Nav() {
   };
 
   const handleUpgrade = () => {
-    // Replace with your toast notification
     console.log("Coming soon");
   };
   return (
@@ -43,9 +42,11 @@ export default function Nav() {
               <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-2 rounded-lg">
                 <Zap className="w-6 h-6 text-white" />
               </div>
-              <h1 className="ml-3 text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                CloudAPI
-              </h1>
+              <Link to={"/"}>
+                <h1 className="ml-3 text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                  CloudAPI
+                </h1>
+              </Link>
             </div>
           </div>
 
@@ -60,26 +61,27 @@ export default function Nav() {
                 <Home className="w-4 h-4 mr-2" />
                 Dashboard
               </Button>
-              <Button
-                onClick={() => toast.success("Coming soon")}
-                variant="ghost"
-                className="text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
-              >
-                <Key className="w-4 h-4 mr-2" />
-                API Keys
-              </Button>
-              <Button
-                onClick={() => toast.success("Coming soon")}
-                variant="ghost"
-                className="text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
-              >
-                <Settings className="w-4 h-4 mr-2" />
-                Settings
-              </Button>
+              <Link to={"/"}>
+                <Button
+                  variant="ghost"
+                  className="text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
+                >
+                  <Key className="w-4 h-4 mr-2" />
+                  API Keys
+                </Button>
+              </Link>
+              <Link to={"/profile"}>
+                <Button
+                  variant="ghost"
+                  className="text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  Profile
+                </Button>
+              </Link>
             </div>
           </div>
 
-          {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-3">
             {isLoggedIn ? (
               <>
@@ -152,8 +154,10 @@ export default function Nav() {
                 variant="ghost"
                 className="w-full justify-start text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
               >
-                <Key className="w-4 h-4 mr-2" />
-                API Keys
+                <Link to={"/"}>
+                  <Key className="w-4 h-4 mr-2" />
+                  API Keys
+                </Link>
               </Button>
               <Button
                 onClick={() => toast.success("Coming soon")}
@@ -161,7 +165,7 @@ export default function Nav() {
                 className="w-full justify-start text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
               >
                 <Settings className="w-4 h-4 mr-2" />
-                Settings
+                Profile
               </Button>
 
               {/* Mobile Auth Buttons */}

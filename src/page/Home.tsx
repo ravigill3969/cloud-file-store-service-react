@@ -16,6 +16,7 @@ import {
   Globe,
 } from "lucide-react";
 import Nav from "@/components/Nav";
+import { useUserContext } from "@/context/userContext";
 
 export default function Home() {
   const [password, setPassword] = useState("");
@@ -25,8 +26,9 @@ export default function Home() {
   const [copiedKey, setCopiedKey] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-  const publicKey =
-    "pk_live_51H7xJcK2VzQRHzpLfNrI9mZxKzEwY2VzQRHzpLfNrI9mZxKzEwY2VzQ";
+  const { public_key } = useUserContext();
+
+  const publicKey = public_key;
   const secretKey =
     "sk_live_51H7xJcK2VzQRHzpLfNrI9mZxKzEwY2VzQRHzpLfNrI9mZxKzEwY2VzQ";
   const correctPassword = "admin123";

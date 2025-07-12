@@ -13,7 +13,7 @@ export interface ApiGETUser {
   data: GETUserData[];
 }
 
-export interface GETUserData {
+export type GETUserData = {
   uuid: string;
   username: string;
   email: string;
