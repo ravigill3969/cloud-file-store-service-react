@@ -26,9 +26,14 @@ export default function Home() {
   const [copiedKey, setCopiedKey] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-  const { public_key } = useUserContext();
+  const { apiData } = useUserContext();
 
-  const publicKey = public_key;
+  let publicKey = "Loading...";
+
+  if (apiData && apiData.public_key) {
+    publicKey = apiData.public_key;
+  }
+
   const secretKey =
     "sk_live_51H7xJcK2VzQRHzpLfNrI9mZxKzEwY2VzQRHzpLfNrI9mZxKzEwY2VzQ";
   const correctPassword = "admin123";

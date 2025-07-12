@@ -1,15 +1,17 @@
 import type { GETUserData } from "@/api/APItypes";
 import { useGetUserInfo } from "@/api/auth";
 import React, { createContext, useContext, useEffect, useState } from "react";
+type Data = {
+  loading: boolean;
+  apiData: GETUserData | undefined;
+};
 
-const UserContext = createContext<GETUserData | undefined>(undefined);
+const UserContext = createContext<Data | undefined>(undefined);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [userData, setUserData] = useState<GETUserData | undefined>();
 
-  const { data } = useGetUserInfo();
-
-  console.log(data)
+  const { data, isLoading } = useGetUserInfo();
 
   useEffect(() => {
     if (data && data.data.length === 1) {
@@ -20,7 +22,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }, [data]);
 
   return (
-    <UserContext.Provider value={userData}>{children}</UserContext.Provider>
+    <UserContext.Provider value={{ apiData: userData, loading: isLoading }}>
+      {children}
+    </UserContext.Provider>
   );
 }
 
