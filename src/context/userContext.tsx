@@ -2,10 +2,13 @@ import type { GETUserData } from "@/api/APItypes";
 import { refreshToken, useGetUserInfo } from "@/api/auth";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+
 type Data = {
   loading: boolean;
   apiData: GETUserData | undefined;
   isLoggedIn: boolean;
+  setIsLoggedIn: (arg: boolean) => void;
+  setUserData: (arg: GETUserData | undefined) => void; // Fixed: allow GETUserData type
 };
 
 const UserContext = createContext<Data | undefined>(undefined);
@@ -24,10 +27,17 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         setUserData(data.data[0]);
         setIsLoggedIn(true);
       } else if (isError && !tokenRefreshed) {
-        await refreshToken();
-        setTokenRefreshed(true);
-        refetch();
-      } else {
+        try {
+          await refreshToken();
+          setTokenRefreshed(true);
+          refetch();
+        } catch (error: unknown) {
+          navigate("/login");
+          setUserData(undefined);
+          setIsLoggedIn(false);
+          console.log(error);
+        }
+      } else if (isError && tokenRefreshed) {
         navigate("/login");
         setUserData(undefined);
         setIsLoggedIn(false);
@@ -39,7 +49,13 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <UserContext.Provider
-      value={{ apiData: userData, loading: isLoading, isLoggedIn: loggedIn }}
+      value={{
+        apiData: userData,
+        loading: isLoading,
+        isLoggedIn: loggedIn,
+        setIsLoggedIn,
+        setUserData,
+      }}
     >
       {children}
     </UserContext.Provider>

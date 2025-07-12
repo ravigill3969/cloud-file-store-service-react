@@ -4,6 +4,7 @@ import type {
   LoginInputT,
   SecretKeyAPIRes,
 } from "@/api/APItypes";
+import { useUserContext } from "@/context/userContext";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router";
@@ -177,7 +178,8 @@ export const useGetSecretKey = () => {
 };
 
 export const useLogout = () => {
-  const invalidateQuery = useQueryClient();
+  const queryClient = useQueryClient()
+  const { setIsLoggedIn, setUserData } = useUserContext();
   const navigate = useNavigate();
   const logout = async (): Promise<{ status: "success"; message: string }> => {
     const response = await fetch(`${base_url}/api/users/logout`, {
@@ -202,9 +204,12 @@ export const useLogout = () => {
     mutationFn: logout,
     mutationKey: ["logout"],
     onSuccess(res) {
-      invalidateQuery.invalidateQueries({ queryKey: ["getUserInfo"] });
+      console.log(res)
+      queryClient.clear();
+      setUserData(undefined);
+      setIsLoggedIn(false);
+      toast.success(res.status);
       navigate("/login");
-      toast.success(res.message);
     },
     onError(res) {
       toast.error(res.message);
