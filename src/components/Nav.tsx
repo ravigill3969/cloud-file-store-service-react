@@ -10,6 +10,7 @@ import {
   LogOut,
   Crown,
   ArrowRight,
+  Image,
 } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -79,6 +80,15 @@ export default function Nav() {
                 >
                   <Settings className="w-4 h-4 mr-2" />
                   Profile
+                </Button>
+              </Link>
+              <Link to={"/my-images"}>
+                <Button
+                  variant="ghost"
+                  className="text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
+                >
+                  <Image className="w-4 h-4 mr-2" />
+                  My-images
                 </Button>
               </Link>
             </div>
@@ -168,6 +178,14 @@ export default function Nav() {
               >
                 <Settings className="w-4 h-4 mr-2" />
                 Profile
+              </Button>
+              <Button
+                onClick={() => toast.success("Coming soon")}
+                variant="ghost"
+                className="w-full justify-start text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
+              >
+                <Settings className="w-4 h-4 mr-2" />
+                My-images
               </Button>
 
               {/* Mobile Auth Buttons */}
