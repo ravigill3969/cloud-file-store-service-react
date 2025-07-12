@@ -43,12 +43,10 @@ function App() {
 function ProtectedAuth({ children }: { children: React.ReactNode }) {
   const { apiData, loading } = useUserContext();
 
-  // Show loading state while checking authentication
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  // If no user data, redirect to login
   if (!apiData) {
     return <Navigate to="/login" replace />;
   }

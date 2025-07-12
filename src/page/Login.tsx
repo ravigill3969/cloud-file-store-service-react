@@ -1,13 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useLogin } from "@/api/auth";
+import { useUserContext } from "@/context/userContext";
 
 const Login = () => {
+  const { apiData } = useUserContext();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -18,6 +22,12 @@ const Login = () => {
       [name]: value,
     }));
   };
+
+  useEffect(() => {
+    if (apiData) {
+      navigate("/");
+    }
+  }, [apiData, navigate]);
 
   const { mutate } = useLogin();
 

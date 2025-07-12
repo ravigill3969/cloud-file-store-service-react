@@ -24,3 +24,10 @@ export type GETUserData = {
   post_api_calls: number;
   created_at: string;
 }
+
+export type SecretKeyAPIRes = {
+  status : "success"
+  data : [string]
+}
+
+

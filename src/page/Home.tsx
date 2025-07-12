@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import Nav from "@/components/Nav";
 import { useUserContext } from "@/context/userContext";
+import { useGetSecretKey } from "@/api/auth";
 
 export default function Home() {
   const [password, setPassword] = useState("");
@@ -24,7 +25,8 @@ export default function Home() {
   const [, setIsPasswordCorrect] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [copiedKey, setCopiedKey] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+
+  const [secretKey, setSecretKey] = useState<string | null>(null);
 
   const { apiData } = useUserContext();
 
@@ -34,20 +36,16 @@ export default function Home() {
     publicKey = apiData.public_key;
   }
 
-  const secretKey =
-    "sk_live_51H7xJcK2VzQRHzpLfNrI9mZxKzEwY2VzQRHzpLfNrI9mZxKzEwY2VzQ";
-  const correctPassword = "admin123";
-
+  const { mutate, isSuccess, data } = useGetSecretKey();
   const handlePasswordSubmit = () => {
-    if (password === correctPassword) {
-      setIsPasswordCorrect(true);
-      setShowSecretKey(true);
-      setPasswordError("");
-    } else {
-      setPasswordError("Incorrect password. Please try again.");
-      setPassword("");
-    }
+    mutate({ password });
   };
+  useEffect(() => {
+    if (isSuccess) {
+      setSecretKey(data.data[0]);
+      setShowSecretKey(true);
+    }
+  }, [isSuccess, data]);
 
   const copyToClipboard = (text: string, keyType: string) => {
     navigator.clipboard.writeText(text);
@@ -168,7 +166,7 @@ export default function Home() {
                       <Input
                         type={showPassword ? "text" : "password"}
                         placeholder="Enter password"
-                        value={password}
+                        // value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="pr-10 border-red-200 focus:border-red-400"
                       />
@@ -185,15 +183,6 @@ export default function Home() {
                         )}
                       </Button>
                     </div>
-
-                    {passwordError && (
-                      <Alert className="border-red-200 bg-red-50">
-                        <AlertCircle className="w-4 h-4 text-red-600" />
-                        <AlertDescription className="text-red-800">
-                          {passwordError}
-                        </AlertDescription>
-                      </Alert>
-                    )}
 
                     <Button
                       onClick={handlePasswordSubmit}
@@ -218,7 +207,9 @@ export default function Home() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => copyToClipboard(secretKey, "secret")}
+                      onClick={() =>
+                        copyToClipboard(secretKey ? secretKey : "", "secret")
+                      }
                       className="ml-2 flex-shrink-0 border-red-200 hover:bg-red-100"
                     >
                       {copiedKey === "secret" ? (
