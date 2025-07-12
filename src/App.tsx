@@ -41,13 +41,13 @@ function App() {
 }
 
 function ProtectedAuth({ children }: { children: React.ReactNode }) {
-  const { apiData, loading } = useUserContext();
+  const { loading, isLoggedIn } = useUserContext();
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  if (!apiData) {
+  if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
   }
 

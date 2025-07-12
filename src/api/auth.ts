@@ -6,6 +6,7 @@ import type {
 } from "@/api/APItypes";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router";
 const base_url = import.meta.env.VITE_BACKEND_URL;
 
 type RegisterInputT = {
@@ -15,6 +16,8 @@ type RegisterInputT = {
 };
 
 export const useRegister = () => {
+  const invalidateQuery = useQueryClient();
+  const navigate = useNavigate();
   const register = async (
     data: RegisterInputT
   ): Promise<{ status: string }> => {
@@ -49,6 +52,8 @@ export const useRegister = () => {
     },
     onSuccess() {
       toast.success("success!");
+      invalidateQuery.invalidateQueries({ queryKey: ["getUserInfo"] });
+      navigate("/");
     },
   });
 
@@ -56,7 +61,8 @@ export const useRegister = () => {
 };
 
 export const useLogin = () => {
-  const invalidateQuery = useQueryClient()
+  const invalidateQuery = useQueryClient();
+  const navigate = useNavigate();
   const login = async (data: LoginInputT): Promise<{ status: string }> => {
     const response = await fetch(`${base_url}/api/users/login`, {
       method: "POST",
@@ -86,10 +92,11 @@ export const useLogin = () => {
     mutationFn: login,
     onError(error) {
       toast.error(error.message);
-      invalidateQuery.invalidateQueries({queryKey: ["getUserInfo"]})
     },
     onSuccess() {
+      invalidateQuery.invalidateQueries({ queryKey: ["getUserInfo"] });
       toast.success("success!");
+      navigate("/");
     },
   });
 
@@ -119,6 +126,7 @@ export const useGetUserInfo = () => {
   const query = useQuery({
     queryKey: ["getUserInfo"],
     queryFn: getUserInfo,
+    retry: false,
   });
 
   return query;
@@ -167,3 +175,60 @@ export const useGetSecretKey = () => {
   });
   return mutation;
 };
+
+export const useLogout = () => {
+  const invalidateQuery = useQueryClient();
+  const navigate = useNavigate();
+  const logout = async (): Promise<{ status: "success"; message: string }> => {
+    const response = await fetch(`${base_url}/api/users/logout`, {
+      method: "GET",
+      credentials: "include",
+    });
+
+    const res = await response.json();
+
+    if (!response.ok) {
+      const err: APIError = {
+        message: res.message,
+        status: res.status,
+      };
+
+      throw err;
+    }
+    return res;
+  };
+
+  const mutation = useMutation({
+    mutationFn: logout,
+    mutationKey: ["logout"],
+    onSuccess(res) {
+      invalidateQuery.invalidateQueries({ queryKey: ["getUserInfo"] });
+      navigate("/login");
+      toast.success(res.message);
+    },
+    onError(res) {
+      toast.error(res.message);
+    },
+  });
+
+  return mutation;
+};
+
+export async function refreshToken() {
+  const response = await fetch(`${base_url}/api/users/refresh-token`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  const res = await response.json();
+
+  if (!response.ok) {
+    const err: APIError = {
+      message: res.message,
+      status: res.status,
+    };
+    throw err;
+  }
+
+  return res;
+}

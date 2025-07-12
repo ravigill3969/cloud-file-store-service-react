@@ -1,3 +1,4 @@
+import { useLogout } from "@/api/auth";
 import { Button } from "@/components/ui/button";
 import {
   Menu,
@@ -18,6 +19,8 @@ export default function Nav() {
   const [isNavOpen, setIsNavOpen] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(true);
 
+  const {mutate} = useLogout()
+
   const toggleNav = () => setIsNavOpen(!isNavOpen);
 
   const handleLogin = () => {
@@ -26,8 +29,7 @@ export default function Nav() {
   };
 
   const handleLogout = () => {
-    setIsLoggedIn(false);
-    toast.success("Logged out successfully!");
+    mutate()
   };
 
   const handleUpgrade = () => {
