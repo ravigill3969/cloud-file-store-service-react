@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { Search, Grid, List, Camera } from "lucide-react";
+import { Search, Grid, List, Camera, Upload } from "lucide-react";
 import Nav from "@/components/Nav";
 import { ImageCard } from "@/components/ImageCard";
 import { ListView } from "@/components/ListView";
+import { Input } from "@/components/ui/input";
+import { useGetAllFilesWithUserID } from "@/api/file";
 
 function Pic() {
   const [viewMode, setViewMode] = useState("grid");
@@ -88,6 +90,10 @@ function Pic() {
     return matchesSearch && matchesFilter;
   });
 
+  const { data } = useGetAllFilesWithUserID();
+
+  console.log(data);
+
   return (
     <>
       <Nav />
@@ -120,6 +126,11 @@ function Pic() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white/70 backdrop-blur-sm"
                 />
+              </div>
+
+              <div className="relative flex-1 max-w-md\\">
+                <Upload className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Input type="file" accept=".jpg,.jpeg,.png" />
               </div>
 
               <div className="flex items-center gap-3">

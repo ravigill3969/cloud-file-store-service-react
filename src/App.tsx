@@ -7,6 +7,7 @@ import Profile from "./page/Profile";
 import Subscription from "./page/Subscription";
 import { useUserContext } from "./context/userContext";
 import Pic from "./page/Pic";
+import Upload from "./page/Upload";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           </ProtectedAuth>
         }
       />
+
       <Route
         path="/my-images"
         element={
@@ -45,6 +47,16 @@ function App() {
           </ProtectedAuth>
         }
       />
+
+      <Route
+        path="/upload"
+        element={
+          <ProtectedAuth>
+            <Upload />
+          </ProtectedAuth>
+        }
+      />
+
     </Routes>
   );
 }

@@ -1,4 +1,4 @@
-import type { GETUserData } from "@/api/APItypes";
+import type { GETUserData } from "@/api/APITypesUser";
 import { refreshToken, useGetUserInfo } from "@/api/auth";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";

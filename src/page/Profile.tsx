@@ -20,7 +20,7 @@ import {
   Crown,
 } from "lucide-react";
 import Nav from "@/components/Nav";
-import type { GETUserData } from "@/api/APItypes";
+import type { GETUserData } from "@/api/APITypesUser";
 import { useUserContext } from "@/context/userContext";
 
 export default function Profile() {

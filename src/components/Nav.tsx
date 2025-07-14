@@ -11,6 +11,7 @@ import {
   Crown,
   ArrowRight,
   Image,
+  Upload,
 } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -89,6 +90,15 @@ export default function Nav() {
                 >
                   <Image className="w-4 h-4 mr-2" />
                   My-images
+                </Button>
+              </Link>
+              <Link to={"/upload"}>
+                <Button
+                  variant="ghost"
+                  className="text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  Upload
                 </Button>
               </Link>
             </div>

@@ -3,11 +3,12 @@ import type {
   ApiGETUser,
   LoginInputT,
   SecretKeyAPIRes,
-} from "@/api/APItypes";
+} from "@/api/APITypesUser";
 import { useUserContext } from "@/context/userContext";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router";
+
 const base_url = import.meta.env.VITE_BACKEND_URL;
 
 type RegisterInputT = {
@@ -178,7 +179,7 @@ export const useGetSecretKey = () => {
 };
 
 export const useLogout = () => {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   const { setIsLoggedIn, setUserData } = useUserContext();
   const navigate = useNavigate();
   const logout = async (): Promise<{ status: "success"; message: string }> => {
@@ -204,7 +205,7 @@ export const useLogout = () => {
     mutationFn: logout,
     mutationKey: ["logout"],
     onSuccess(res) {
-      console.log(res)
+      console.log(res);
       queryClient.clear();
       setUserData(undefined);
       setIsLoggedIn(false);
