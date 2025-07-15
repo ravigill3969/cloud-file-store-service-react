@@ -1,229 +1,260 @@
-import { useState } from "react";
-import { Search, Grid, List, Camera, Upload } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
+import { CalendarDays, Download, Image as ImageIcon, Info } from "lucide-react";
 import Nav from "@/components/Nav";
-import { ImageCard } from "@/components/ImageCard";
-import { ListView } from "@/components/ListView";
-import { Input } from "@/components/ui/input";
 import { useGetAllFilesWithUserID } from "@/api/file";
+import type { ImageData } from "@/api/APITypesFile";
 
-function Pic() {
-  const [viewMode, setViewMode] = useState("grid");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedFilter, setSelectedFilter] = useState("all");
+const base_url = import.meta.env.VITE_BACKEND_URL;
 
-  // Mock data for uploaded images
-  const mockImages = [
-    {
-      id: 1,
-      url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop",
-      title: "Mountain Sunrise",
-      uploadDate: "2024-01-15",
-      size: "2.4 MB",
-      format: "JPG",
-      dimensions: "1920x1080",
-      likes: 24,
-      views: 156,
-    },
-    {
-      id: 2,
-      url: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=600&fit=crop",
-      title: "Forest Path",
-      uploadDate: "2024-01-12",
-      size: "3.1 MB",
-      format: "PNG",
-      dimensions: "2048x1536",
-      likes: 18,
-      views: 89,
-    },
-    {
-      id: 3,
-      url: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&h=600&fit=crop",
-      title: "Starry Night",
-      uploadDate: "2024-01-10",
-      size: "1.8 MB",
-      format: "JPG",
-      dimensions: "1600x1200",
-      likes: 42,
-      views: 234,
-    },
-    {
-      id: 4,
-      url: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&h=600&fit=crop",
-      title: "Lake Reflection",
-      uploadDate: "2024-01-08",
-      size: "2.9 MB",
-      format: "JPG",
-      dimensions: "1920x1440",
-      likes: 31,
-      views: 178,
-    },
-    {
-      id: 5,
-      url: "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800&h=600&fit=crop",
-      title: "Autumn Leaves",
-      uploadDate: "2024-01-05",
-      size: "2.2 MB",
-      format: "PNG",
-      dimensions: "1800x1200",
-      likes: 15,
-      views: 92,
-    },
-    {
-      id: 6,
-      url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop",
-      title: "Ocean Waves",
-      uploadDate: "2024-01-03",
-      size: "3.5 MB",
-      format: "JPG",
-      dimensions: "2560x1440",
-      likes: 28,
-      views: 145,
-    },
-  ];
+const Pic: React.FC = () => {
+  const [images, setImages] = useState<ImageData[]>([]);
 
-  const filteredImages = mockImages.filter((image) => {
-    const matchesSearch = image.title
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const matchesFilter =
-      selectedFilter === "all" || image.format.toLowerCase() === selectedFilter;
-    return matchesSearch && matchesFilter;
-  });
+  const [selectedImage, setSelectedImage] = useState<ImageData | null>(null);
 
-  const { data } = useGetAllFilesWithUserID();
+  const { data, isLoading, error } = useGetAllFilesWithUserID();
 
-  console.log(data);
+  useEffect(() => {
+    const loadImages = async () => {
+      if (data) {
+        setImages(data.data);
+      }
+    };
+
+    loadImages();
+  }, [data]);
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const formatFileSize = (width: number, height: number) => {
+    return `${width} × ${height}`;
+  };
+
+  const getMimeTypeColor = (mimeType: string) => {
+    switch (mimeType) {
+      case "image/jpeg":
+        return "bg-blue-100 text-blue-800";
+      case "image/png":
+        return "bg-green-100 text-green-800";
+      case "image/gif":
+        return "bg-purple-100 text-purple-800";
+      case "image/webp":
+        return "bg-orange-100 text-orange-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const downloadImage = async (imageData: ImageData) => {
+    console.log(imageData)
+  };
+
+  if (isLoading) {
+    return (
+      <>
+        <Nav />
+        <div className="container mx-auto p-6">
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold mb-2">Image Gallery</h1>
+            <p className="text-gray-600">Loading your images...</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <Card key={i} className="overflow-hidden">
+                <Skeleton className="h-48 w-full" />
+                <CardHeader>
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-3 w-1/2" />
+                </CardHeader>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto p-6">
+        <Alert variant="destructive">
+          <AlertDescription>{error.message}</AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   return (
     <>
       <Nav />
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-        {/* Header Section */}
-        <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200/50 sticky top-0 z-10">
-          <div className="max-w-7xl mx-auto px-6 py-8">
-            <div className="text-center mb-8">
-              <div className="flex items-center justify-center gap-3 mb-4">
-                <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl">
-                  <Camera className="w-8 h-8 text-white" />
-                </div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                  My Gallery
-                </h1>
-              </div>
-              <p className="text-gray-600 text-lg">
-                Discover and manage your uploaded memories
-              </p>
-            </div>
+      <div className="container mx-auto p-6">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold mb-2">Image Gallery</h1>
+          <p className="text-gray-600">
+            {images.length} {images.length === 1 ? "image" : "images"} available
+          </p>
+        </div>
 
-            {/* Search and Filter Bar */}
-            <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Search your images..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white/70 backdrop-blur-sm"
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {images.map((image, index) => (
+            <Card
+              key={index}
+              className="overflow-hidden hover:shadow-lg transition-shadow"
+            >
+              <div className="relative">
+                <img
+                  src={`${base_url}/api/file/get/${image.id}`}
+                  alt={image.original_filename}
+                  crossOrigin="anonymous"
+                  
+                  className="w-full h-48 object-cover cursor-pointer"
+                  onClick={() => setSelectedImage(image)}
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = `data:image/svg+xml;base64,${btoa(`
+                    <svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+                      <rect width="100%" height="100%" fill="#f3f4f6"/>
+                      <text x="50%" y="50%" text-anchor="middle" dy=".3em" font-family="Arial" font-size="14" fill="#6b7280">
+                      Failed to load image
+                      </text>
+                      </svg>
+                  `)}`;
+                  }}
+                />
+                <div className="absolute top-2 right-2">
+                  <Badge className={getMimeTypeColor(image.mime_type)}>
+                    {image.mime_type.replace("image/", "").toUpperCase()}
+                  </Badge>
+                </div>
+              </div>
+
+              <CardHeader>
+                <CardTitle
+                  className="text-lg truncate"
+                  title={image.original_filename}
+                >
+                  {image.original_filename}
+                </CardTitle>
+                <CardDescription className="space-y-1">
+                  <div className="flex items-center gap-1 text-sm">
+                    <CalendarDays className="h-3 w-3" />
+                    {formatDate(image.upload_date)}
+                  </div>
+                  <div className="flex items-center gap-1 text-sm">
+                    <ImageIcon className="h-3 w-3" />
+                    {formatFileSize(image.width, image.height)}
+                  </div>
+                </CardDescription>
+              </CardHeader>
+
+              <CardContent>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSelectedImage(image)}
+                    className="flex-1"
+                  >
+                    <Info className="h-4 w-4 mr-1" />
+                    View
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => downloadImage(image)}
+                    className="flex-1"
+                  >
+                    <Download className="h-4 w-4 mr-1" />
+                    Download
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {selectedImage && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+            onClick={() => setSelectedImage(null)}
+          >
+            <div
+              className="bg-white rounded-lg max-w-4xl max-h-[90vh] overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-4 border-b">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h2 className="text-xl font-semibold mb-1">
+                      {selectedImage.original_filename}
+                    </h2>
+                    <div className="flex items-center gap-4 text-sm text-gray-600">
+                      <span>
+                        {formatFileSize(
+                          selectedImage.width,
+                          selectedImage.height
+                        )}
+                      </span>
+                      <span>{formatDate(selectedImage.upload_date)}</span>
+                      <Badge
+                        className={getMimeTypeColor(selectedImage.mime_type)}
+                      >
+                        {selectedImage.mime_type}
+                      </Badge>
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelectedImage(null)}
+                  >
+                    ×
+                  </Button>
+                </div>
+              </div>
+
+              <div className="p-4">
+                <img
+                  src={`${base_url}/api/file/get/${selectedImage.id}}`}
+                  alt={selectedImage.original_filename}
+                  className="max-w-full max-h-[60vh] object-contain mx-auto"
+                  onError={(err) => console.log(err)}
                 />
               </div>
 
-              <div className="relative flex-1 max-w-md\\">
-                <Upload className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <Input type="file" accept=".jpg,.jpeg,.png" />
-              </div>
-
-              <div className="flex items-center gap-3">
-                <select
-                  value={selectedFilter}
-                  onChange={(e) => setSelectedFilter(e.target.value)}
-                  className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/70 backdrop-blur-sm"
+              <div className="p-4 border-t">
+                <Button
+                  onClick={() => downloadImage(selectedImage)}
+                  className="w-full"
                 >
-                  <option value="all">All Formats</option>
-                  <option value="jpg">JPG</option>
-                  <option value="png">PNG</option>
-                  <option value="gif">GIF</option>
-                </select>
-
-                <div className="flex bg-white/70 backdrop-blur-sm rounded-xl border border-gray-300 p-1">
-                  <button
-                    onClick={() => setViewMode("grid")}
-                    className={`p-2 rounded-lg transition-all ${
-                      viewMode === "grid"
-                        ? "bg-blue-500 text-white"
-                        : "text-gray-600 hover:bg-gray-100"
-                    }`}
-                  >
-                    <Grid className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={() => setViewMode("list")}
-                    className={`p-2 rounded-lg transition-all ${
-                      viewMode === "list"
-                        ? "bg-blue-500 text-white"
-                        : "text-gray-600 hover:bg-gray-100"
-                    }`}
-                  >
-                    <List className="w-5 h-5" />
-                  </button>
-                </div>
+                  <Download className="h-4 w-4 mr-2" />
+                  Download {selectedImage.original_filename}
+                </Button>
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-6 py-8">
-          {/* Stats Bar */}
-          <div className="flex items-center gap-6 mb-8 text-sm text-gray-600">
-            <span className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-              {filteredImages.length} images
-            </span>
-            <span className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              {mockImages.reduce((acc, img) => acc + img.views, 0)} total views
-            </span>
-            <span className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-              {mockImages.reduce((acc, img) => acc + img.likes, 0)} total likes
-            </span>
-          </div>
-
-          {/* Image Grid/List */}
-          {filteredImages.length === 0 ? (
-            <div className="text-center py-16">
-              <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Camera className="w-12 h-12 text-gray-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                No images found
-              </h3>
-              <p className="text-gray-600">
-                Try adjusting your search or filter criteria
-              </p>
-            </div>
-          ) : (
-            <>
-              {viewMode === "grid" ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {filteredImages.map((image) => (
-                    <ImageCard key={image.id} image={image} />
-                  ))}
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {filteredImages.map((image) => (
-                    <ListView key={image.id} image={image} />
-                  ))}
-                </div>
-              )}
-            </>
-          )}
-        </div>
+        )}
       </div>
     </>
   );
-}
+};
 
 export default Pic;

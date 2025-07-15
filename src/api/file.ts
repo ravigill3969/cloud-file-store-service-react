@@ -1,10 +1,11 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { APIError } from "./APITypesUser";
+import type { ImageApiResponse } from "./APITypesFile";
 
 const base_url = import.meta.env.VITE_BACKEND_URL;
 
 export function useGetAllFilesWithUserID() {
-  const getAllFilesWithUser = async () => {
+  const getAllFilesWithUser = async (): Promise<ImageApiResponse> => {
     const response = await fetch(`${base_url}/api/file/get-all`, {
       method: "GET",
       credentials: "include",

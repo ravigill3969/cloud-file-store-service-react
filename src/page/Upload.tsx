@@ -79,7 +79,7 @@ const Upload: React.FC = () => {
 
   const handleUpload = () => {
     mutate(files);
-    setUploadComplete(true);
+    setUploadComplete(false);
   };
 
   return (
