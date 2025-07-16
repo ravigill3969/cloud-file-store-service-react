@@ -1,5 +1,6 @@
 import { useLogout } from "@/api/auth";
 import { Button } from "@/components/ui/button";
+import { useUserContext } from "@/context/userContext";
 import {
   Menu,
   X,
@@ -20,8 +21,9 @@ import { Link } from "react-router";
 export default function Nav() {
   const [isNavOpen, setIsNavOpen] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const { apiData } = useUserContext();
 
-  const {mutate} = useLogout()
+  const { mutate } = useLogout();
 
   const toggleNav = () => setIsNavOpen(!isNavOpen);
 
@@ -31,7 +33,7 @@ export default function Nav() {
   };
 
   const handleLogout = () => {
-    mutate()
+    mutate();
   };
 
   const handleUpgrade = () => {
@@ -107,19 +109,22 @@ export default function Nav() {
           <div className="hidden md:flex items-center space-x-3">
             {isLoggedIn ? (
               <>
-                <Button
-                  onClick={handleUpgrade}
-                  className="relative group overflow-hidden bg-gradient-to-r from-gray-900 via-gray-800 to-black hover:from-gray-800 hover:via-gray-700 hover:to-gray-900 text-white font-semibold px-8 py-6 rounded-2xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-gray-900/25 border border-gray-700 hover:border-gray-600"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <Link to={"/subscription"}>
-                    <div className="relative flex items-center gap-3">
-                      <Crown className="w-5 h-5 text-yellow-400" />
-                      <span className="text-lg">Upgrade</span>
-                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-                    </div>
-                  </Link>
-                </Button>
+                {apiData?.account_type !== "standard" ? (
+                  <Button
+                    onClick={handleUpgrade}
+                    className="relative group overflow-hidden bg-gradient-to-r from-gray-900 via-gray-800 to-black hover:from-gray-800 hover:via-gray-700 hover:to-gray-900 text-white font-semibold px-8 py-6 rounded-2xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-gray-900/25 border border-gray-700 hover:border-gray-600"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <Link to={"/subscription"}>
+                      <div className="relative flex items-center gap-3">
+                        <Crown className="w-5 h-5 text-yellow-400" />
+                        <span className="text-lg">Upgrade</span>
+                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                      </div>
+                    </Link>
+                  </Button>
+                ) : null}
+
                 <Button
                   onClick={handleLogout}
                   variant="outline"

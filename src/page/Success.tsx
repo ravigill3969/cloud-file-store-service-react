@@ -10,11 +10,11 @@ import {
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 
-import { base_url } from "@/api/API";
-import toast from "react-hot-toast";
+import { useVerifySession } from "@/api/stripe";
 
 function Success() {
   const navigate = useNavigate();
+  const { mutate } = useVerifySession();
 
   useEffect(() => {
     const sessionId = new URLSearchParams(window.location.search).get(
@@ -27,29 +27,13 @@ function Success() {
     }
 
     if (sessionId) {
-      fetch(`${base_url}/api/stripe/verify-session`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ session_id: sessionId }),
-      })
-        .then(async (res) => {
-          if (!res.ok) {
-            throw new Error("Session verification failed");
-          }
-          return res.json() as Promise<{ status: string }>;
-        })
-        .then((data) => {
-          toast.success(data.status);
-        })
-        .catch(() => {
-          toast.error("Subscription verification failed");
-        });
+      mutate(sessionId);
     }
 
     setTimeout(() => {
       navigate("/");
     }, 3000);
-  }, [navigate]);
+  }, [mutate, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center p-4">

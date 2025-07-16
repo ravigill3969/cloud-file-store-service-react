@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Check,
   Star,
@@ -8,12 +8,14 @@ import {
   Sparkles,
   Info,
 } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useCreateStripeSession } from "@/api/stripe";
+import { useUserContext } from "@/context/userContext";
 
 function Subscription() {
   const [hoveredPlan, setHoveredPlan] = useState<number | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<number | null>(null);
+  const navigate = useNavigate();
 
   const { mutate } = useCreateStripeSession();
 
@@ -83,6 +85,14 @@ function Subscription() {
       gradient: "from-emerald-50 to-teal-50",
     },
   ];
+
+  const { apiData } = useUserContext();
+
+  useEffect(() => {
+    if (apiData && apiData.account_type === "standard") {
+      navigate("/");
+    }
+  });
 
   const handlePlanSelect = (planName: string) => {
     if (planName === "Premium") {
