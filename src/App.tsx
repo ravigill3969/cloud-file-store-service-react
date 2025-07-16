@@ -71,6 +71,8 @@ function App() {
 function ProtectedAuth({ children }: { children: React.ReactNode }) {
   const { loading, isLoggedIn } = useUserContext();
 
+  console.log(loading , isLoggedIn)
+
   if (loading) {
     return <div>Loading...</div>;
   }

@@ -1,6 +1,7 @@
 import type { GETUserData } from "@/api/APITypesUser";
 import { refreshToken, useGetUserInfo } from "@/api/auth";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 
 type Data = {
@@ -8,7 +9,7 @@ type Data = {
   apiData: GETUserData | undefined;
   isLoggedIn: boolean;
   setIsLoggedIn: (arg: boolean) => void;
-  setUserData: (arg: GETUserData | undefined) => void; // Fixed: allow GETUserData type
+  setUserData: (arg: GETUserData | undefined) => void;
 };
 
 const UserContext = createContext<Data | undefined>(undefined);
@@ -19,39 +20,45 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [tokenRefreshed, setTokenRefreshed] = useState(false);
   const navigate = useNavigate();
 
-  const { data, isLoading, isError, isSuccess, refetch } = useGetUserInfo();
+  const { data, isError, isSuccess, refetch } = useGetUserInfo();
 
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const tryFetchUserInfo = async () => {
-      if (data && data.data.length === 1 && isSuccess) {
-        setUserData(data.data[0]);
-        setIsLoggedIn(true);
-      } else if (isError && !tokenRefreshed) {
-        try {
+      try {
+        if (data && data.data.length === 1 && isSuccess) {
+          setUserData(data.data[0]);
+          setIsLoggedIn(true);
+          setLoading(false);
+        } else if (isError && !tokenRefreshed) {
+          setLoading(true);
           await refreshToken();
           setTokenRefreshed(true);
           refetch();
-        } catch (error: unknown) {
+          return;
+        } else if (isError && tokenRefreshed) {
           navigate("/login");
           setUserData(undefined);
           setIsLoggedIn(false);
-          console.log(error);
+          setLoading(false);
         }
-      } else if (isError && tokenRefreshed) {
+      } catch (err) {
+        const errorMessage = (err as { message: string }).message;
+        toast.error(errorMessage);
         navigate("/login");
         setUserData(undefined);
         setIsLoggedIn(false);
+        setLoading(false);
       }
     };
 
     tryFetchUserInfo();
   }, [data, isError, navigate, isSuccess, tokenRefreshed, refetch]);
-
   return (
     <UserContext.Provider
       value={{
         apiData: userData,
-        loading: isLoading,
+        loading,
         isLoggedIn: loggedIn,
         setIsLoggedIn,
         setUserData,
