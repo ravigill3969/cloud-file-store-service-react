@@ -1,8 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { APIError } from "./APITypesUser";
 import type { ImageApiResponse } from "./APITypesFile";
-
-const base_url = import.meta.env.VITE_BACKEND_URL;
+import { base_url } from "./API";
 
 export function useGetAllFilesWithUserID() {
   const getAllFilesWithUser = async (): Promise<ImageApiResponse> => {

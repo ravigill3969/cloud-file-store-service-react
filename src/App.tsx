@@ -8,6 +8,7 @@ import Subscription from "./page/Subscription";
 import { useUserContext } from "./context/userContext";
 import Pic from "./page/Pic";
 import Upload from "./page/Upload";
+import Success from "./page/Success";
 
 function App() {
   return (
@@ -57,6 +58,12 @@ function App() {
         }
       />
 
+      <Route
+        path="/success"
+        element={
+            <Success />
+        }
+      />
     </Routes>
   );
 }

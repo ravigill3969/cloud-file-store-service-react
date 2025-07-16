@@ -9,7 +9,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router";
 
-const base_url = import.meta.env.VITE_BACKEND_URL;
+import { base_url } from "./API";
 
 type RegisterInputT = {
   username: string;

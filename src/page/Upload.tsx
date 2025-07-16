@@ -17,6 +17,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { useUploadFiles } from "@/api/file";
+import Nav from "@/components/Nav";
 
 const Upload: React.FC = () => {
   const [dragActive, setDragActive] = useState<boolean>(false);
@@ -83,140 +84,145 @@ const Upload: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-2xl">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-slate-800 mb-2">
-            Upload Your Files
-          </h1>
-          <p className="text-slate-600 text-lg">
-            Drag and drop files or click to browse
-          </p>
-        </div>
-
-        {/* Upload Area */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-200">
-          <div
-            className={`relative border-2 border-dashed rounded-xl p-12 text-center transition-all duration-300 ${
-              dragActive
-                ? "border-blue-500 bg-blue-50"
-                : "border-slate-300 hover:border-slate-400 hover:bg-slate-50"
-            }`}
-            onDragEnter={handleDrag}
-            onDragLeave={handleDrag}
-            onDragOver={handleDrag}
-            onDrop={handleDrop}
-          >
-            <input
-              type="file"
-              multiple
-              onChange={handleFileSelect}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            />
-
-            <div className="flex flex-col items-center space-y-4">
-              <div
-                className={`rounded-full p-4 ${
-                  dragActive ? "bg-blue-100" : "bg-slate-100"
-                }`}
-              >
-                <UploadIcon
-                  className={`w-8 h-8 ${
-                    dragActive ? "text-blue-600" : "text-slate-600"
-                  }`}
-                />
-              </div>
-
-              <div>
-                <h3 className="text-xl font-semibold text-slate-800 mb-2">
-                  {dragActive
-                    ? "Drop files here"
-                    : "Choose files or drag them here"}
-                </h3>
-                <p className="text-slate-500">
-                  Support for a single or bulk upload. Strictly prohibit from
-                  uploading company data or other banned files.
-                </p>
-              </div>
-
-              <button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
-                Browse Files
-              </button>
-            </div>
+    <>
+    <Nav />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
+        <div className="w-full max-w-2xl">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-slate-800 mb-2">
+              Upload Your Files
+            </h1>
+            <p className="text-slate-600 text-lg">
+              Drag and drop files or click to browse
+            </p>
           </div>
 
-          {/* File List */}
-          {files.length > 0 && (
-            <div className="mt-8 space-y-3">
-              <h4 className="text-lg font-semibold text-slate-800">
-                Selected Files
-              </h4>
+          {/* Upload Area */}
+          <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-200">
+            <div
+              className={`relative border-2 border-dashed rounded-xl p-12 text-center transition-all duration-300 ${
+                dragActive
+                  ? "border-blue-500 bg-blue-50"
+                  : "border-slate-300 hover:border-slate-400 hover:bg-slate-50"
+              }`}
+              onDragEnter={handleDrag}
+              onDragLeave={handleDrag}
+              onDragOver={handleDrag}
+              onDrop={handleDrop}
+            >
+              <input
+                type="file"
+                multiple
+                onChange={handleFileSelect}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              />
 
-              <div className="space-y-2 max-h-64 overflow-y-auto">
-                {files.map((file, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div className="text-slate-600">{getFileIcon(file)}</div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-800 truncate">
-                          {file.name}
-                        </p>
-                        <p className="text-xs text-slate-500">
-                          {formatFileSize(file.size)}
-                        </p>
-                      </div>
-                    </div>
-
-                    <button
-                      onClick={() => removeFile(index)}
-                      className="p-1 text-slate-400 hover:text-red-600 transition-colors"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex justify-between items-center pt-4">
-                <p className="text-sm text-slate-600">
-                  {files.length} file{files.length !== 1 ? "s" : ""} selected
-                </p>
-
-                <button
-                  onClick={handleUpload}
-                  disabled={uploadComplete}
-                  className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-green-400 transition-colors font-medium flex items-center space-x-2"
+              <div className="flex flex-col items-center space-y-4">
+                <div
+                  className={`rounded-full p-4 ${
+                    dragActive ? "bg-blue-100" : "bg-slate-100"
+                  }`}
                 >
-                  {uploadComplete ? (
-                    <>
-                      <CheckCircle className="w-4 h-4" />
-                      <span>Uploaded!</span>
-                    </>
-                  ) : (
-                    <>
-                      <UploadIcon className="w-4 h-4" />
-                      <span>Upload Files</span>
-                    </>
-                  )}
+                  <UploadIcon
+                    className={`w-8 h-8 ${
+                      dragActive ? "text-blue-600" : "text-slate-600"
+                    }`}
+                  />
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-2">
+                    {dragActive
+                      ? "Drop files here"
+                      : "Choose files or drag them here"}
+                  </h3>
+                  <p className="text-slate-500">
+                    Support for a single or bulk upload. Strictly prohibit from
+                    uploading company data or other banned files.
+                  </p>
+                </div>
+
+                <button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                  Browse Files
                 </button>
               </div>
             </div>
-          )}
-        </div>
 
-        {/* Footer */}
-        <div className="text-center mt-8 text-slate-500 text-sm">
-          <p>
-            Maximum file size: 10MB. Supported formats: Images, Documents,
-            Archives, Audio, Video
-          </p>
+            {/* File List */}
+            {files.length > 0 && (
+              <div className="mt-8 space-y-3">
+                <h4 className="text-lg font-semibold text-slate-800">
+                  Selected Files
+                </h4>
+
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {files.map((file, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="text-slate-600">
+                          {getFileIcon(file)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-slate-800 truncate">
+                            {file.name}
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            {formatFileSize(file.size)}
+                          </p>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => removeFile(index)}
+                        className="p-1 text-slate-400 hover:text-red-600 transition-colors"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex justify-between items-center pt-4">
+                  <p className="text-sm text-slate-600">
+                    {files.length} file{files.length !== 1 ? "s" : ""} selected
+                  </p>
+
+                  <button
+                    onClick={handleUpload}
+                    disabled={uploadComplete}
+                    className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-green-400 transition-colors font-medium flex items-center space-x-2"
+                  >
+                    {uploadComplete ? (
+                      <>
+                        <CheckCircle className="w-4 h-4" />
+                        <span>Uploaded!</span>
+                      </>
+                    ) : (
+                      <>
+                        <UploadIcon className="w-4 h-4" />
+                        <span>Upload Files</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="text-center mt-8 text-slate-500 text-sm">
+            <p>
+              Maximum file size: 10MB. Supported formats: Images, Documents,
+              Archives, Audio, Video
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

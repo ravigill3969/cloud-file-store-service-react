@@ -9,10 +9,13 @@ import {
   Info,
 } from "lucide-react";
 import { Link } from "react-router";
+import { useCreateStripeSession } from "@/api/stripe";
 
 function Subscription() {
   const [hoveredPlan, setHoveredPlan] = useState<number | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<number | null>(null);
+
+  const { mutate } = useCreateStripeSession();
 
   const plans = [
     {
@@ -80,6 +83,12 @@ function Subscription() {
       gradient: "from-emerald-50 to-teal-50",
     },
   ];
+
+  const handlePlanSelect = (planName: string) => {
+    if (planName === "Premium") {
+      mutate();
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 py-16 px-4">
@@ -220,6 +229,7 @@ function Subscription() {
                     </Link>
                   ) : (
                     <button
+                      onClick={() => handlePlanSelect(plan.name)}
                       className={`w-full py-3 px-6 rounded-xl font-semibold transition-all duration-300 ${plan.buttonStyle}`}
                     >
                       {plan.buttonText}
@@ -302,6 +312,7 @@ function Subscription() {
                     </Link>
                   ) : (
                     <button
+                      onClick={() => handlePlanSelect(plan.name)}
                       className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 ${plan.buttonStyle}`}
                     >
                       {plan.buttonText}
