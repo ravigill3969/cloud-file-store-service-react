@@ -2,7 +2,6 @@ import { useMutation } from "@tanstack/react-query";
 import type { APIError } from "./APITypesUser";
 import type { StripeCheckoutResponse } from "./APITypesStripe";
 import { base_url } from "./API";
-import toast from "react-hot-toast";
 
 export function useCreateStripeSession() {
   const createSession = async (): Promise<StripeCheckoutResponse> => {
@@ -28,44 +27,44 @@ export function useCreateStripeSession() {
     mutationKey: ["createSession"],
     mutationFn: createSession,
     onSuccess(res) {
-      window.location.href = res.data[0];
+      window.open(res.data[0], "_blank");
     },
   });
 
   return mutate;
 }
 
-export function useVerifySession() {
-  const createSession = async (
-    sessionId: string
-  ): Promise<{ status: string }> => {
-    const response = await fetch(`${base_url}/api/stripe/verify-session`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ session_id: sessionId }),
-    });
+// export function useVerifySession() {
+//   const createSession = async (
+//     sessionId: string
+//   ): Promise<{ status: string }> => {
+//     const response = await fetch(`${base_url}/api/stripe/verify-session`, {
+//       method: "POST",
+//       credentials: "include",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({ session_id: sessionId }),
+//     });
 
-    const res = await response.json();
+//     const res = await response.json();
 
-    if (!response.ok) {
-      const err: APIError = {
-        message: res.message,
-        status: res.status,
-      };
-      throw err;
-    }
+//     if (!response.ok) {
+//       const err: APIError = {
+//         message: res.message,
+//         status: res.status,
+//       };
+//       throw err;
+//     }
 
-    return res;
-  };
+//     return res;
+//   };
 
-  const mutate = useMutation({
-    mutationKey: ["createSession"],
-    mutationFn: createSession,
-    onSuccess(res) {
-      toast.success(res.status);
-    },
-  });
+//   const mutate = useMutation({
+//     mutationKey: ["createSession"],
+//     mutationFn: createSession,
+//     onSuccess(res) {
+//       toast.success(res.status);
+//     },
+//   });
 
-  return mutate;
-}
+//   return mutate;
+// }

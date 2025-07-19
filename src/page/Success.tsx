@@ -10,30 +10,30 @@ import {
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 
-import { useVerifySession } from "@/api/stripe";
+// import { useVerifySession } from "@/api/stripe";
 
 function Success() {
   const navigate = useNavigate();
-  const { mutate } = useVerifySession();
+  // const { mutate } = useVerifySession();
 
   useEffect(() => {
-    const sessionId = new URLSearchParams(window.location.search).get(
-      "session_id"
-    );
+    // const sessionId = new URLSearchParams(window.location.search).get(
+    //   "session_id"
+    // );
 
-    if (!sessionId) {
-      navigate("/");
-      return;
-    }
+    // if (!sessionId) {
+    //   navigate("/");
+    //   return;
+    // }
 
-    if (sessionId) {
-      mutate(sessionId);
-    }
+    // if (sessionId) {
+    //   mutate(sessionId);
+    // }
 
     setTimeout(() => {
       navigate("/");
     }, 3000);
-  }, [mutate, navigate]);
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center p-4">

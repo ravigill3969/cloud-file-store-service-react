@@ -10,9 +10,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CalendarDays, Download, Image as ImageIcon, Info } from "lucide-react";
+import { CalendarDays, Image as ImageIcon, Info, Trash } from "lucide-react";
 import Nav from "@/components/Nav";
-import { useGetAllFilesWithUserID } from "@/api/file";
+import { useDeleteImage, useGetAllFilesWithUserID } from "@/api/file";
 import type { ImageData } from "@/api/APITypesFile";
 import { Link } from "react-router";
 
@@ -20,8 +20,9 @@ const base_url = import.meta.env.VITE_BACKEND_URL;
 
 const Pic: React.FC = () => {
   const [images, setImages] = useState<ImageData[]>([]);
-
   const [selectedImage, setSelectedImage] = useState<ImageData | null>(null);
+
+  const { mutate } = useDeleteImage();
 
   const { data, isLoading, error } = useGetAllFilesWithUserID();
 
@@ -66,10 +67,6 @@ const Pic: React.FC = () => {
     }
   };
 
-  const downloadImage = async (imageData: ImageData) => {
-    console.log(imageData);
-  };
-
   if (isLoading) {
     return (
       <>
@@ -111,6 +108,10 @@ const Pic: React.FC = () => {
       <div className="container mx-auto p-6">
         <div className="mb-6">
           <h1 className="text-3xl font-bold mb-2">Image Gallery</h1>
+          <p>
+            If you are seeing an image, which is deleted. It is cached will be
+            removed soon.
+          </p>
           <p className="text-gray-600 mb-4">
             {images.length} {images.length === 1 ? "image" : "images"} available
           </p>
@@ -127,7 +128,7 @@ const Pic: React.FC = () => {
             >
               <div className="relative">
                 <img
-                  src={`${base_url}/api/file/get/${image.id}`}
+                  src={`${base_url}/api/file/get-file/${image.id}`}
                   alt={image.original_filename}
                   crossOrigin="anonymous"
                   className="w-full h-48 object-cover cursor-pointer"
@@ -184,11 +185,11 @@ const Pic: React.FC = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => downloadImage(image)}
                     className="flex-1"
+                    onClick={() => mutate(image.id)}
                   >
-                    <Download className="h-4 w-4 mr-1" />
-                    Download
+                    <Trash />
+                    Delete
                   </Button>
                 </div>
               </CardContent>
@@ -238,21 +239,19 @@ const Pic: React.FC = () => {
 
               <div className="p-4">
                 <img
-                  src={`${base_url}/api/file/get/${selectedImage.id}`}
+                  src={`${base_url}/api/file/get-file/${selectedImage.id}`}
                   alt={selectedImage.original_filename}
                   crossOrigin="anonymous"
                   className="max-w-full max-h-[60vh] object-contain mx-auto"
-                  onError={(err) => console.log(err)}
                 />
-              </div>
-
-              <div className="p-4 border-t">
                 <Button
-                  onClick={() => downloadImage(selectedImage)}
-                  className="w-full"
+                  onClick={() => mutate(selectedImage.id)}
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 mt-4 border-2 border-black"
                 >
-                  <Download className="h-4 w-4 mr-2" />
-                  Download {selectedImage.original_filename}
+                  <Trash />
+                  Delete
                 </Button>
               </div>
             </div>
