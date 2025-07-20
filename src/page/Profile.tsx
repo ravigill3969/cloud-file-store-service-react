@@ -3,14 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   User,
   Edit3,
   Shield,
   Lock,
-  CheckCircle,
-  AlertCircle,
   Sparkles,
   Save,
   Eye,
@@ -22,6 +19,8 @@ import {
 import Nav from "@/components/Nav";
 import type { GETUserData } from "@/api/APITypesUser";
 import { useUserContext } from "@/context/userContext";
+import { useUpdatePassword } from "@/api/auth";
+import toast from "react-hot-toast";
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState("profile");
@@ -54,11 +53,6 @@ export default function Profile() {
     confirmPassword: "",
   });
 
-  const [alerts, setAlerts] = useState({
-    profile: null,
-    password: null,
-  });
-
   const [loading, setLoading] = useState({
     profile: false,
     password: false,
@@ -72,70 +66,32 @@ export default function Profile() {
     });
   };
 
-  const handleProfileUpdate = async () => {
-    setLoading((prev) => ({ ...prev, profile: true }));
+  const handleProfileUpdate = async () => {};
 
-    // Simulate API call
-    setTimeout(() => {
-      //   setAlerts((prev) => ({
-      //     ...prev,
-      //     profile: { type: "success", message: "Profile updated successfully!" },
-      //   }));
-
-      setLoading((prev) => ({ ...prev, profile: false }));
-
-      // Clear alert after 3 seconds
-      setTimeout(() => {
-        setAlerts((prev) => ({ ...prev, profile: null }));
-      }, 3000);
-    }, 1000);
-  };
+  const { mutate } = useUpdatePassword();
 
   const handlePasswordUpdate = async () => {
+    setLoading({ password: true, profile: false });
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      //   setAlerts((prev) => ({
-      //     ...prev,
-      //     password: { type: "error", message: "New passwords do not match!" },
-      //   }));
+      toast.error("New passwords donot match");
+      setLoading({ password: false, profile: false });
+
       return;
     }
 
-    if (passwordForm.newPassword.length < 8) {
-      //   setAlerts((prev) => ({
-      //     ...prev,
-      //     password: {
-      //       type: "error",
-      //       message: "Password must be at least 8 characters long!",
-      //     },
-      //   }));
+    if (passwordForm.newPassword.length < 4) {
+      toast.error("Password should of min length 4");
+      setLoading({ password: false, profile: false });
+
       return;
     }
 
-    setLoading((prev) => ({ ...prev, password: true }));
-
-    // Simulate API call
-    setTimeout(() => {
-      setPasswordForm({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: "",
-      });
-
-      //   setAlerts((prev) => ({
-      //     ...prev,
-      //     password: {
-      //       type: "success",
-      //       message: "Password updated successfully!",
-      //     },
-      //   }));
-
-      setLoading((prev) => ({ ...prev, password: false }));
-
-      // Clear alert after 3 seconds
-      setTimeout(() => {
-        setAlerts((prev) => ({ ...prev, password: null }));
-      }, 3000);
-    }, 1000);
+    mutate({
+      confirm_new_password: passwordForm.confirmPassword,
+      new_password: passwordForm.newPassword,
+      password: passwordForm.currentPassword,
+    });
+    setLoading({ password: false, profile: false });
   };
 
   const getAccountTypeBadge = (type: string) => {
@@ -237,31 +193,6 @@ export default function Profile() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
-                  {alerts.profile && (
-                    <Alert
-                      className={`mb-6 ${
-                        alerts.profile === "success"
-                          ? "border-green-200 bg-green-50"
-                          : "border-red-200 bg-red-50"
-                      }`}
-                    >
-                      {alerts.profile === "success" ? (
-                        <CheckCircle className="w-4 h-4 text-green-600" />
-                      ) : (
-                        <AlertCircle className="w-4 h-4 text-red-600" />
-                      )}
-                      <AlertDescription
-                        className={
-                          alerts.profile === "success"
-                            ? "text-green-800"
-                            : "text-red-800"
-                        }
-                      >
-                        {alerts.profile}
-                      </AlertDescription>
-                    </Alert>
-                  )}
-
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -346,31 +277,6 @@ export default function Profile() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
-                  {alerts.password && (
-                    <Alert
-                      className={`mb-6 ${
-                        alerts.password === "success"
-                          ? "border-green-200 bg-green-50"
-                          : "border-red-200 bg-red-50"
-                      }`}
-                    >
-                      {alerts.password === "success" ? (
-                        <CheckCircle className="w-4 h-4 text-green-600" />
-                      ) : (
-                        <AlertCircle className="w-4 h-4 text-red-600" />
-                      )}
-                      <AlertDescription
-                        className={
-                          alerts.password === "success"
-                            ? "text-green-800"
-                            : "text-red-800"
-                        }
-                      >
-                        {/* {alerts.password.message} */}
-                      </AlertDescription>
-                    </Alert>
-                  )}
-
                   <div className="space-y-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
