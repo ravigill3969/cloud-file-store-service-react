@@ -412,18 +412,6 @@ export default function Profile() {
                 </CardHeader>
                 <CardContent className="p-6">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-lg border border-green-200">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-green-800">
-                          GET Requests
-                        </span>
-                        <Activity className="w-4 h-4 text-green-600" />
-                      </div>
-                      <div className="text-2xl font-bold text-green-900">
-                        {userData.get_api_calls.toLocaleString()}
-                      </div>
-                    </div>
-
                     <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-6 rounded-lg border border-blue-200">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-sm font-medium text-blue-800">
@@ -455,9 +443,7 @@ export default function Profile() {
                       <span className="text-sm font-medium text-indigo-800">
                         Total API Calls <strong>Left</strong>:{" "}
                         {(
-                          userData.get_api_calls +
-                          userData.post_api_calls +
-                          userData.edit_api_calls
+                          userData.post_api_calls + userData.edit_api_calls
                         ).toLocaleString()}
                       </span>
                     </div>

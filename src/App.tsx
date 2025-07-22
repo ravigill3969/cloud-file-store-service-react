@@ -9,6 +9,7 @@ import { useUserContext } from "./context/userContext";
 import Pic from "./page/Pic";
 import Upload from "./page/Upload";
 import Success from "./page/Success";
+import RateLimitPage from "./page/RateLimiting";
 
 function App() {
   return (
@@ -58,12 +59,8 @@ function App() {
         }
       />
 
-      <Route
-        path="/success"
-        element={
-            <Success />
-        }
-      />
+      <Route path="/success" element={<Success />} />
+      <Route path="/rate-limit" element={<RateLimitPage />} />
     </Routes>
   );
 }
@@ -71,7 +68,7 @@ function App() {
 function ProtectedAuth({ children }: { children: React.ReactNode }) {
   const { loading, isLoggedIn } = useUserContext();
 
-  console.log(loading , isLoggedIn)
+  console.log(loading, isLoggedIn);
 
   if (loading) {
     return <div>Loading...</div>;

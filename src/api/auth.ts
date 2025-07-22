@@ -106,6 +106,7 @@ export const useLogin = () => {
 };
 
 export const useGetUserInfo = () => {
+  const navigate = useNavigate();
   const getUserInfo = async (): Promise<ApiGETUser> => {
     const response = await fetch(`${base_url}/api/users/get-user`, {
       method: "GET",
@@ -113,6 +114,12 @@ export const useGetUserInfo = () => {
     });
 
     const res = await response.json();
+
+    if (res.statusCode === 429) {
+      navigate("/rate-limit");
+      toast.error("Rate limit, wait for 1 minute.");
+      throw new Error("Rate Limit error");
+    }
 
     if (!response.ok) {
       const err: APIError = {
@@ -227,6 +234,12 @@ export async function refreshToken() {
   });
 
   const res = await response.json();
+
+  if (res.statusCode === 429) {
+    window.location.href = "/rate-limit";
+    toast.error("Rate limit, wait for 1 minute.");
+    throw new Error("Rate Limit error");
+  }
 
   if (!response.ok) {
     const err: APIError = {
