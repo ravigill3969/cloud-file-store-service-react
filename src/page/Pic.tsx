@@ -109,7 +109,7 @@ const Pic: React.FC = () => {
         <div className="mb-6">
           <h1 className="text-3xl font-bold mb-2">Image Gallery</h1>
           <p>
-            If you are seeing an image, which is deleted. It is cached will be
+            If you are seeing an image, which is deleted. It will be
             removed soon.
           </p>
           <p className="text-gray-600 mb-4">

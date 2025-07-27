@@ -21,12 +21,15 @@ import type { GETUserData } from "@/api/APITypesUser";
 import { useUserContext } from "@/context/userContext";
 import { useUpdatePassword } from "@/api/auth";
 import toast from "react-hot-toast";
+import { useCancelSubscription } from "@/api/stripe";
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState("profile");
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { mutate: mutateCancelSubscription, isPending } =
+    useCancelSubscription();
 
   const [userData, setUserData] = useState<GETUserData | undefined>();
 
@@ -42,7 +45,7 @@ export default function Profile() {
       setUserData(apiData);
       setProfileForm({
         email: apiData.email,
-        username: apiData.email,
+        username: apiData.username,
       });
     }
   }, [apiData]);
@@ -264,6 +267,22 @@ export default function Profile() {
                       )}
                     </Button>
                   </div>
+                  {userData.account_type != "standard" ? (
+                    ""
+                  ) : (
+                    <div className="mt-8 flex justify-end">
+                      <Button
+                        onClick={() => mutateCancelSubscription()}
+                        disabled={isPending}
+                        className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
+                      >
+                        <>
+                          <Save className="w-4 h-4 mr-2" />
+                          Cancel subscription
+                        </>
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
