@@ -38,6 +38,10 @@ const Pic: React.FC = () => {
     loadImages();
   }, [data]);
 
+  const handleDelete = (id: string) => {
+    mutate(id);
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -74,7 +78,7 @@ const Pic: React.FC = () => {
         <div className="container mx-auto p-6">
           <div className="mb-6">
             <h1 className="text-3xl font-bold mb-2">Image Gallery</h1>
-            <p className="text-gray-600">Loading your images...</p>
+            <p className="text-black">Loading your images...</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -107,11 +111,13 @@ const Pic: React.FC = () => {
       <Nav />
       <div className="container mx-auto p-6">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold mb-2">Image Gallery</h1>
-          <p>
-            If you are seeing an image, which is deleted. It will be
-            removed soon.
-          </p>
+          <div className="flex justify-between">
+            <h1 className="text-3xl font-bold mb-2">Image Gallery</h1>
+            <Link to={"/deleted-images"}>
+              <Button variant={"destructive"}>Deleted Images</Button>
+            </Link>
+          </div>
+
           <p className="text-gray-600 mb-4">
             {images.length} {images.length === 1 ? "image" : "images"} available
           </p>
@@ -131,7 +137,7 @@ const Pic: React.FC = () => {
                   src={`${base_url}/api/file/get-file/${image.id}`}
                   alt={image.original_filename}
                   crossOrigin="anonymous"
-                  className="w-full h-48 object-cover cursor-pointer"
+                  className="w-full h-full object-contain cursor-pointer"
                   onClick={() => setSelectedImage(image)}
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
@@ -145,10 +151,17 @@ const Pic: React.FC = () => {
                   `)}`;
                   }}
                 />
-                <div className="absolute top-2 right-2">
+                <div className="absolute flex gap-4 top-2 right-2">
                   <Badge className={getMimeTypeColor(image.mime_type)}>
                     {image.mime_type.replace("image/", "").toUpperCase()}
                   </Badge>
+                  {image.width > 0 || image.height > 0 ? (
+                    <Badge className={getMimeTypeColor(image.mime_type)}>
+                      {image.mime_type.replace("image/", "").toUpperCase()}
+                    </Badge>
+                  ) : (
+                    ""
+                  )}
                 </div>
               </div>
 
@@ -186,7 +199,7 @@ const Pic: React.FC = () => {
                     variant="outline"
                     size="sm"
                     className="flex-1"
-                    onClick={() => mutate(image.id)}
+                    onClick={() => handleDelete(image.id)}
                   >
                     <Trash />
                     Delete

@@ -1,6 +1,10 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type { APIError } from "./APITypesUser";
-import type { ImageApiResponse } from "./APITypesFile";
+import type {
+  GetDeletedImagesRes,
+  ImageApiResponse,
+  UploadFileResponse,
+} from "./APITypesFile";
 import { base_url } from "./API";
 import toast from "react-hot-toast";
 
@@ -33,7 +37,9 @@ export function useGetAllFilesWithUserID() {
 }
 
 export function useUploadFiles() {
-  const uploadFileWithUserID = async (images: File[]) => {
+  const uploadFileWithUserID = async (
+    images: File[]
+  ): Promise<UploadFileResponse> => {
     const form = new FormData();
 
     for (const image of images) {
@@ -99,4 +105,31 @@ export function useDeleteImage() {
   });
 
   return mutate;
+}
+
+export function useGetDeletedImages() {
+  const getDeletedImages = async (): Promise<GetDeletedImagesRes> => {
+    const res = await fetch(`${base_url}/api/file/deleted-images`, {
+      credentials: "include",
+      method: "GET",
+    });
+
+    const response = await res.json();
+
+    if (!res.ok) {
+      const err: APIError = {
+        message: response.message,
+        status: response.status,
+      };
+      throw err;
+    }
+
+    return response;
+  };
+
+  const query = useQuery({
+    queryKey: ["getDeletedImages"],
+    queryFn: getDeletedImages,
+  });
+  return query;
 }

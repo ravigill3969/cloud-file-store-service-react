@@ -10,6 +10,7 @@ import Pic from "./page/Pic";
 import Upload from "./page/Upload";
 import Success from "./page/Success";
 import RateLimitPage from "./page/RateLimiting";
+import DeletedImages from "./page/DeletedImages";
 
 function App() {
   return (
@@ -21,6 +22,14 @@ function App() {
         element={
           <ProtectedAuth>
             <Home />
+          </ProtectedAuth>
+        }
+      />
+      <Route
+        path="/deleted-images"
+        element={
+          <ProtectedAuth>
+            <DeletedImages />
           </ProtectedAuth>
         }
       />

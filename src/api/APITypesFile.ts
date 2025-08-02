@@ -8,6 +8,16 @@ export interface ImageData {
 }
 
 export interface ImageApiResponse {
-  status: 'success' | 'error';
+  status: "success" | "error";
   data: ImageData[];
 }
+
+export type UploadFileResponse = {
+  failed_file_err: string[];
+  uploaded_files: string[];
+};
+
+export type GetDeletedImagesRes = {
+  status: "success";
+  data: string[];
+};
