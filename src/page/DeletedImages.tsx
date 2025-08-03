@@ -122,26 +122,26 @@ function DeletedImages() {
     <>
       <Nav />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-        <div className="container mx-auto px-6 py-8">
+        <div className="container mx-auto px-6 py-12 max-w-7xl">
           {/* Header */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center space-x-4">
-                <div className="p-3 bg-red-100 rounded-xl">
-                  <Trash2 className="h-8 w-8 text-red-600" />
+          <div className="mb-12">
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center space-x-6">
+                <div className="p-4 bg-gradient-to-br from-red-100 to-red-50 rounded-2xl shadow-lg">
+                  <Trash2 className="h-10 w-10 text-red-600" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold text-slate-900 mb-1">
+                  <h1 className="text-4xl font-bold text-slate-900 mb-2">
                     Deleted Images
                   </h1>
-                  <p className="text-slate-600">
+                  <p className="text-lg text-slate-600">
                     Manage your deleted images and recover them if needed
                   </p>
                 </div>
               </div>
               <Badge
                 variant="secondary"
-                className="px-4 py-2 text-sm font-medium"
+                className="px-6 py-3 text-lg font-semibold bg-slate-100 text-slate-700 rounded-full"
               >
                 {images.length} {images.length === 1 ? "image" : "images"}
               </Badge>
@@ -150,20 +150,20 @@ function DeletedImages() {
 
           {/* Images Grid */}
           {images.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8">
               {images.map((imageId) => (
                 <Card
                   key={imageId}
-                  className="group  transition-all duration-300 border-0 shadow-md hover:shadow-xl hover:-translate-y-1"
+                  className="group bg-white transition-all duration-500 border-0 shadow-lg hover:shadow-2xl hover:-translate-y-2 rounded-2xl overflow-hidden"
                 >
                   <CardContent className="p-0">
                     {/* Image Container */}
-                    <div className="relative aspect-square overflow-hidden rounded-t-lg bg-slate-100">
+                    <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-slate-100 to-slate-50">
                       <img
                         src={`${base_url}/api/file/get-file/${imageId}`}
                         crossOrigin="anonymous"
                         alt={`Deleted image ${imageId}`}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
                         onLoad={() => {
                           console.log(`Image ${imageId} loaded successfully`);
                         }}
@@ -171,43 +171,60 @@ function DeletedImages() {
                           console.error(`Failed to load image ${imageId}`);
                           const target = e.target as HTMLImageElement;
                           target.src = `data:image/svg+xml;base64,${btoa(`
-                            <svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
-                              <rect width="100%" height="100%" fill="#f1f5f9"/>
-                              <circle cx="200" cy="120" r="30" fill="#cbd5e1"/>
-                              <rect x="185" y="105" width="30" height="20" rx="2" fill="#f1f5f9"/>
-                              <circle cx="195" cy="112" r="3" fill="#cbd5e1"/>
-                              <text x="50%" y="180" text-anchor="middle" font-family="Arial" font-size="12" fill="#64748b">
+                            <svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">
+                              <defs>
+                                <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                  <stop offset="0%" style="stop-color:#f1f5f9;stop-opacity:1" />
+                                  <stop offset="100%" style="stop-color:#e2e8f0;stop-opacity:1" />
+                                </linearGradient>
+                              </defs>
+                              <rect width="100%" height="100%" fill="url(#grad)"/>
+                              <circle cx="200" cy="160" r="40" fill="#cbd5e1" opacity="0.6"/>
+                              <rect x="180" y="140" width="40" height="28" rx="4" fill="#f1f5f9"/>
+                              <circle cx="190" cy="150" r="4" fill="#cbd5e1"/>
+                              <path d="M180 168 L200 148 L220 168 Z" fill="#cbd5e1" opacity="0.8"/>
+                              <text x="50%" y="240" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#64748b" font-weight="500">
                                 Image not available
+                              </text>
+                              <text x="50%" y="260" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#94a3b8">
+                                File may be corrupted
                               </text>
                             </svg>
                           `)}`;
                         }}
                       />
 
-                      {/* Overlay on hover */}
-                      <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      {/* Gradient Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      
+                      {/* Status Badge */}
+                      <div className="absolute top-3 right-3">
+                        <Badge className="bg-red-500/90 text-white backdrop-blur-sm border-0 text-xs font-medium px-2 py-1">
+                          Deleted
+                        </Badge>
+                      </div>
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="p-4 space-y-2">
+                    <div className="p-6 space-y-3 bg-white">
                       <Button
                         onClick={() => handleRecover(imageId)}
                         disabled={
                           recoveringImages.has(imageId) ||
                           deletingImages.has(imageId)
                         }
-                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-colors duration-200"
-                        size="sm"
+                        className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold py-3 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-[1.02]"
+                        size="default"
                       >
                         {recoveringImages.has(imageId) ? (
                           <>
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-3"></div>
                             Recovering...
                           </>
                         ) : (
                           <>
-                            <RotateCcw className="h-4 w-4 mr-2" />
-                            Recover
+                            <RotateCcw className="h-4 w-4 mr-3" />
+                            Recover Image
                           </>
                         )}
                       </Button>
@@ -219,17 +236,17 @@ function DeletedImages() {
                           deletingImages.has(imageId)
                         }
                         variant="destructive"
-                        className="w-full font-medium transition-colors duration-200"
-                        size="sm"
+                        className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 font-semibold py-3 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-[1.02]"
+                        size="default"
                       >
                         {deletingImages.has(imageId) ? (
                           <>
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-3"></div>
                             Deleting...
                           </>
                         ) : (
                           <>
-                            <X className="h-4 w-4 mr-2" />
+                            <X className="h-4 w-4 mr-3" />
                             Delete Forever
                           </>
                         )}
@@ -241,21 +258,21 @@ function DeletedImages() {
             </div>
           ) : (
             /* Empty State */
-            <div className="flex flex-col items-center justify-center py-16 px-4">
-              <div className="max-w-md text-center">
-                <div className="p-6 bg-slate-100 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
-                  <Trash2 className="h-12 w-12 text-slate-400" />
+            <div className="flex flex-col items-center justify-center py-20 px-4">
+              <div className="max-w-lg text-center">
+                <div className="p-8 bg-gradient-to-br from-slate-100 to-slate-50 rounded-full w-32 h-32 flex items-center justify-center mx-auto mb-8 shadow-lg">
+                  <Trash2 className="h-16 w-16 text-slate-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-slate-800 mb-3">
+                <h3 className="text-2xl font-bold text-slate-800 mb-4">
                   No deleted images found
                 </h3>
-                <p className="text-slate-600 leading-relaxed mb-6">
+                <p className="text-lg text-slate-600 leading-relaxed mb-8">
                   Your recycle bin is empty. Deleted images will appear here and
                   can be recovered within the retention period.
                 </p>
-                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <p className="text-sm text-blue-800">
-                    <strong>Tip:</strong> Images are automatically permanently
+                <div className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-100 shadow-sm">
+                  <p className="text-sm text-blue-800 font-medium">
+                    <strong>💡 Tip:</strong> Images are automatically permanently
                     deleted after 7 days in the recycle bin.
                   </p>
                 </div>
