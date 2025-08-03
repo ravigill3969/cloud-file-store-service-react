@@ -142,7 +142,7 @@ export function useRecoverDeletedImage() {
     });
 
     const response = await res.json();
-    console.log(response);
+
     if (!res.ok) {
       const err: APIError = {
         message: response.message,
@@ -159,5 +159,36 @@ export function useRecoverDeletedImage() {
     mutationKey: ["recoverImaage"],
   });
 
+  return mutate;
+}
+
+export function useDeleteDeletedImagesPermanently() {
+  const deleteDeletedImagesPermanently = async (id: string) => {
+    const res = await fetch(
+      `${base_url}/api/file/delete-permanently?id=${id}`,
+      {
+        method: "DELETE",
+        credentials: "include",
+      }
+    );
+
+    const response = await res.json();
+
+    if (!res.ok) {
+      if (!res.ok) {
+        const err: APIError = {
+          message: response.message,
+          status: response.status,
+        };
+        throw err;
+      }
+    }
+    return res;
+  };
+
+  const mutate = useMutation({
+    mutationFn: deleteDeletedImagesPermanently,
+    mutationKey: ["deleteDeletedImagesPermanently"],
+  });
   return mutate;
 }

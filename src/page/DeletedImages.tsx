@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
-import { Trash2, RotateCcw, AlertCircle } from "lucide-react";
+import { Trash2, RotateCcw, AlertCircle, X } from "lucide-react";
 
 import { base_url } from "../api/API";
 import Nav from "@/components/Nav";
-import { useGetDeletedImages, useRecoverDeletedImage } from "@/api/file";
+import {
+  useGetDeletedImages,
+  useRecoverDeletedImage,
+  useDeleteDeletedImagesPermanently,
+} from "@/api/file";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,16 +19,20 @@ function DeletedImages() {
   const [recoveringImages, setRecoveringImages] = useState<Set<string>>(
     new Set()
   );
+  const [deletingImages, setDeletingImages] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (data && isSuccess && data.data) {
       setImages(data.data);
     } else if (isSuccess && (!data || !data.data)) {
+      // Handle case where response is null or data is null
       setImages([]);
     }
   }, [isSuccess, data]);
 
   const { mutate } = useRecoverDeletedImage();
+  const { mutate: deleteImagePermanently } =
+    useDeleteDeletedImagesPermanently();
 
   const handleRecover = (imageId: string) => {
     setRecoveringImages((prev) => new Set(prev).add(imageId));
@@ -35,10 +43,33 @@ function DeletedImages() {
           newSet.delete(imageId);
           return newSet;
         });
+        // Remove the recovered image from the list
         setImages((prev) => prev.filter((id) => id !== imageId));
       },
       onError: () => {
         setRecoveringImages((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(imageId);
+          return newSet;
+        });
+      },
+    });
+  };
+
+  const handleDelete = (imageId: string) => {
+    setDeletingImages((prev) => new Set(prev).add(imageId));
+    deleteImagePermanently(imageId, {
+      onSuccess: () => {
+        setDeletingImages((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(imageId);
+          return newSet;
+        });
+        // Remove the permanently deleted image from the list
+        setImages((prev) => prev.filter((id) => id !== imageId));
+      },
+      onError: () => {
+        setDeletingImages((prev) => {
           const newSet = new Set(prev);
           newSet.delete(imageId);
           return newSet;
@@ -123,7 +154,7 @@ function DeletedImages() {
               {images.map((imageId) => (
                 <Card
                   key={imageId}
-                  className="group hover:shadow-lg transition-all duration-300 border-0 shadow-md  hover:-translate-y-1"
+                  className="group hover:shadow-lg transition-all duration-300 border-0 shadow-md hover:shadow-xl hover:-translate-y-1"
                 >
                   <CardContent className="p-0">
                     {/* Image Container */}
@@ -157,11 +188,14 @@ function DeletedImages() {
                       <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
 
-                    {/* Action Button */}
-                    <div className="p-4">
+                    {/* Action Buttons */}
+                    <div className="p-4 space-y-2">
                       <Button
                         onClick={() => handleRecover(imageId)}
-                        disabled={recoveringImages.has(imageId)}
+                        disabled={
+                          recoveringImages.has(imageId) ||
+                          deletingImages.has(imageId)
+                        }
                         className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-colors duration-200"
                         size="sm"
                       >
@@ -174,6 +208,29 @@ function DeletedImages() {
                           <>
                             <RotateCcw className="h-4 w-4 mr-2" />
                             Recover
+                          </>
+                        )}
+                      </Button>
+
+                      <Button
+                        onClick={() => handleDelete(imageId)}
+                        disabled={
+                          recoveringImages.has(imageId) ||
+                          deletingImages.has(imageId)
+                        }
+                        variant="destructive"
+                        className="w-full font-medium transition-colors duration-200"
+                        size="sm"
+                      >
+                        {deletingImages.has(imageId) ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                            Deleting...
+                          </>
+                        ) : (
+                          <>
+                            <X className="h-4 w-4 mr-2" />
+                            Delete Forever
                           </>
                         )}
                       </Button>
