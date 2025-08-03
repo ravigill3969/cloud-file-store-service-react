@@ -133,3 +133,31 @@ export function useGetDeletedImages() {
   });
   return query;
 }
+
+export function useRecoverDeletedImage() {
+  const recoverImaage = async (id: string) => {
+    const res = await fetch(`${base_url}/api/file/recover?id=${id}`, {
+      method: "PATCH",
+      credentials: "include",
+    });
+
+    const response = await res.json();
+    console.log(response);
+    if (!res.ok) {
+      const err: APIError = {
+        message: response.message,
+        status: response.status,
+      };
+      throw err;
+    }
+
+    return res;
+  };
+
+  const mutate = useMutation({
+    mutationFn: recoverImaage,
+    mutationKey: ["recoverImaage"],
+  });
+
+  return mutate;
+}
