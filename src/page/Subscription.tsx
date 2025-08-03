@@ -6,15 +6,16 @@ import {
   Building,
   Crown,
   Sparkles,
-  Info,
+  ArrowRight,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 import { useCreateStripeSession } from "@/api/stripe";
 import { useUserContext } from "@/context/userContext";
+import Nav from "@/components/Nav";
 
 function Subscription() {
   const [hoveredPlan, setHoveredPlan] = useState<number | null>(null);
-  const [selectedPlan, setSelectedPlan] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const { mutate } = useCreateStripeSession();
@@ -25,64 +26,58 @@ function Subscription() {
       price: "$0",
       period: "/month",
       description: "Perfect for getting started",
-      icon: <Sparkles className="w-8 h-8" />,
+      icon: <Sparkles className="w-6 h-6" />,
       features: [
         "100 GET API calls",
         "10 Edit API calls",
         "100 POST API calls",
-        "Basic support",
-        "API documentation",
-        "Community access",
+        "Community support",
       ],
       buttonText: "Get Started",
       buttonStyle:
-        "bg-gray-100 hover:bg-gray-200 text-gray-800 border-2 border-gray-300",
+        "bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300",
       popular: false,
-      gradient: "from-gray-50 to-gray-100",
+      accentColor: "slate",
     },
     {
       name: "Premium",
       price: "$29",
       period: "/month",
-      description: "5x the power of Free plan",
-      icon: <Crown className="w-8 h-8" />,
+      description: "5x the power with advanced features",
+      icon: <Crown className="w-6 h-6" />,
       features: [
         "500 GET API calls",
         "50 Edit API calls",
         "500 POST API calls",
         "Priority support",
         "Advanced analytics",
-        "Custom integrations",
         "Team collaboration",
-        "API rate limiting",
       ],
       buttonText: "Start Premium",
       buttonStyle:
-        "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white transform hover:scale-105",
+        "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white",
       popular: true,
-      gradient: "from-purple-50 to-blue-50",
+      accentColor: "purple",
     },
     {
       name: "Enterprise",
       price: "Custom",
-      period: "/month",
-      description: "Unlimited power for your organization",
-      icon: <Building className="w-8 h-8" />,
+      period: "/contact",
+      description: "Unlimited power for organizations",
+      icon: <Building className="w-6 h-6" />,
       features: [
         "Unlimited API calls",
         "Dedicated support",
         "Custom SLA",
         "On-premise deployment",
         "Advanced security",
-        "Custom integrations",
-        "Training & onboarding",
         "Account manager",
       ],
       buttonText: "Contact Sales",
       buttonStyle:
-        "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white transform hover:scale-105",
+        "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white",
       popular: false,
-      gradient: "from-emerald-50 to-teal-50",
+      accentColor: "emerald",
     },
   ];
 
@@ -94,263 +89,208 @@ function Subscription() {
     }
   });
 
-  const handlePlanSelect = (planName: string) => {
+  const handlePlanSelect = async (planName: string) => {
     if (planName === "Premium") {
-      mutate();
+      setIsLoading(true);
+      try {
+        mutate();
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  const getAccentClasses = (color: string) => {
+    switch (color) {
+      case "slate":
+        return {
+          bg: "bg-slate-50",
+          border: "border-slate-200",
+          icon: "bg-slate-100 text-slate-600",
+          check: "bg-slate-100 text-slate-600",
+        };
+      case "purple":
+        return {
+          bg: "bg-purple-50",
+          border: "border-purple-200 ring-2 ring-purple-500/20",
+          icon: "bg-purple-100 text-purple-600",
+          check: "bg-purple-100 text-purple-600",
+        };
+      case "emerald":
+        return {
+          bg: "bg-emerald-50",
+          border: "border-emerald-200",
+          icon: "bg-emerald-100 text-emerald-600",
+          check: "bg-emerald-100 text-emerald-600",
+        };
+      default:
+        return {
+          bg: "bg-slate-50",
+          border: "border-slate-200",
+          icon: "bg-slate-100 text-slate-600",
+          check: "bg-slate-100 text-slate-600",
+        };
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 py-16 px-4">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full mb-6">
-            <Zap className="w-8 h-8 text-white" />
+    <>
+      <Nav />
+      <div className="h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30 flex flex-col">
+        {/* Header - Compact */}
+        <div className="text-center pt-8 pb-6">
+          <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl mb-4">
+            <Zap className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-5xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl font-bold text-slate-900 mb-2">
             Choose Your{" "}
             <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-              Power
+              Plan
             </span>
           </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          <p className="text-slate-600 max-w-2xl mx-auto">
             Scale your API usage with plans designed for every stage of your
             journey
           </p>
         </div>
 
-        {/* Pricing Cards */}
-        <div className="grid lg:grid-cols-3 gap-8 lg:gap-6">
-          {plans.map((plan, index) => (
-            <div
-              key={plan.name}
-              className={`relative bg-white rounded-2xl shadow-xl border-2 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl ${
-                plan.popular
-                  ? "border-purple-500 ring-4 ring-purple-500/20"
-                  : "border-gray-200 hover:border-gray-300"
-              } ${hoveredPlan === index ? "z-10" : ""}`}
-              onMouseEnter={() => setHoveredPlan(index)}
-              onMouseLeave={() => setHoveredPlan(null)}
-            >
-              {/* Popular Badge */}
-              {plan.popular && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-2 rounded-full text-sm font-semibold flex items-center space-x-1">
-                    <Star className="w-4 h-4" />
-                    <span>Most Popular</span>
-                  </div>
-                </div>
-              )}
+        {/* Pricing Cards - Main Content */}
+        <div className="flex-1 flex items-center justify-center px-4">
+          <div className="w-full max-w-6xl">
+            <div className="grid lg:grid-cols-3 gap-6">
+              {plans.map((plan, index) => {
+                const accent = getAccentClasses(plan.accentColor);
 
-              {/* Background Gradient */}
-              <div
-                className={`absolute inset-0 bg-gradient-to-br ${plan.gradient} opacity-50 rounded-2xl`}
-              />
-
-              <div className="relative p-8">
-                {/* Mobile Layout */}
-                <div className="lg:hidden">
-                  {/* Icon */}
+                return (
                   <div
-                    className={`inline-flex items-center justify-center w-12 h-12 rounded-full mb-4 ${
-                      plan.name === "Free"
-                        ? "bg-gray-100 text-gray-600"
-                        : plan.name === "Premium"
-                        ? "bg-gradient-to-r from-purple-100 to-blue-100 text-purple-600"
-                        : "bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-600"
-                    }`}
+                    key={plan.name}
+                    className={`relative bg-white rounded-2xl shadow-lg border-2 transition-all duration-300 transform hover:scale-105 hover:shadow-xl ${
+                      plan.popular
+                        ? accent.border
+                        : "border-slate-200 hover:border-slate-300"
+                    } ${hoveredPlan === index ? "z-10" : ""}`}
+                    onMouseEnter={() => setHoveredPlan(index)}
+                    onMouseLeave={() => setHoveredPlan(null)}
                   >
-                    <div className="w-6 h-6">{plan.icon}</div>
-                  </div>
-
-                  {/* Plan Name and Price */}
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-bold text-gray-900">
-                      {plan.name}
-                    </h3>
-                    <div className="text-right">
-                      <div className="text-2xl font-bold text-gray-900">
-                        {plan.price}
+                    {/* Popular Badge */}
+                    {plan.popular && (
+                      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                        <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-1.5 rounded-full text-sm font-bold flex items-center space-x-1">
+                          <Star className="w-3 h-3 fill-current" />
+                          <span>Popular</span>
+                        </div>
                       </div>
-                      <div className="text-sm text-gray-500">{plan.period}</div>
-                    </div>
-                  </div>
+                    )}
 
-                  {/* More Info Button */}
-                  <button
-                    onClick={() =>
-                      setSelectedPlan(selectedPlan === index ? null : index)
-                    }
-                    className="w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-xl border-2 border-gray-200 text-gray-600 hover:border-gray-300 transition-all duration-200 mb-4"
-                  >
-                    <Info className="w-4 h-4" />
-                    <span className="font-medium">
-                      {selectedPlan === index ? "Hide Details" : "More Info"}
-                    </span>
-                  </button>
+                    {/* Background Accent */}
+                    <div
+                      className={`absolute inset-0 ${accent.bg} opacity-40 rounded-2xl`}
+                    />
 
-                  {/* Expandable Details */}
-                  {selectedPlan === index && (
-                    <div className="space-y-4 mb-6">
-                      <p className="text-gray-600">{plan.description}</p>
-                      <ul className="space-y-2">
+                    <div className="relative p-6">
+                      {/* Icon & Name */}
+                      <div className="text-center mb-4">
+                        <div
+                          className={`inline-flex items-center justify-center w-12 h-12 rounded-xl mb-3 ${accent.icon}`}
+                        >
+                          {plan.icon}
+                        </div>
+                        <h3 className="text-xl font-bold text-slate-900 mb-1">
+                          {plan.name}
+                        </h3>
+                        <p className="text-sm text-slate-600">
+                          {plan.description}
+                        </p>
+                      </div>
+
+                      {/* Price */}
+                      <div className="text-center mb-6">
+                        <div className="flex items-baseline justify-center">
+                          <span className="text-3xl font-bold text-slate-900">
+                            {plan.price}
+                          </span>
+                          <span className="text-slate-500 ml-1 text-sm">
+                            {plan.period}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Features */}
+                      <ul className="space-y-2 mb-6">
                         {plan.features.map((feature, featureIndex) => (
                           <li
                             key={featureIndex}
-                            className="flex items-start space-x-2"
+                            className="flex items-center space-x-2 text-sm"
                           >
                             <div
-                              className={`flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center mt-0.5 ${
-                                plan.name === "Free"
-                                  ? "bg-gray-100"
-                                  : plan.name === "Premium"
-                                  ? "bg-purple-100"
-                                  : "bg-emerald-100"
-                              }`}
+                              className={`flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center ${accent.check}`}
                             >
-                              <Check
-                                className={`w-2.5 h-2.5 ${
-                                  plan.name === "Free"
-                                    ? "text-gray-600"
-                                    : plan.name === "Premium"
-                                    ? "text-purple-600"
-                                    : "text-emerald-600"
-                                }`}
-                              />
+                              <Check className="w-2.5 h-2.5" />
                             </div>
-                            <span className="text-sm text-gray-700">
-                              {feature}
-                            </span>
+                            <span className="text-slate-700">{feature}</span>
                           </li>
                         ))}
                       </ul>
-                    </div>
-                  )}
 
-                  {/* CTA Button */}
-                  {plan.buttonText === "Get Started" ? (
-                    <Link to={"/"}>
-                      <button
-                        className={`w-full py-3 px-6 rounded-xl font-semibold transition-all duration-300 ${plan.buttonStyle}`}
-                      >
-                        {plan.buttonText}
-                      </button>
-                    </Link>
-                  ) : (
-                    <button
-                      onClick={() => handlePlanSelect(plan.name)}
-                      className={`w-full py-3 px-6 rounded-xl font-semibold transition-all duration-300 ${plan.buttonStyle}`}
-                    >
-                      {plan.buttonText}
-                    </button>
-                  )}
-                </div>
-
-                {/* Desktop Layout */}
-                <div className="hidden lg:block">
-                  {/* Icon */}
-                  <div
-                    className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-6 ${
-                      plan.name === "Free"
-                        ? "bg-gray-100 text-gray-600"
-                        : plan.name === "Premium"
-                        ? "bg-gradient-to-r from-purple-100 to-blue-100 text-purple-600"
-                        : "bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-600"
-                    }`}
-                  >
-                    {plan.icon}
-                  </div>
-
-                  {/* Plan Details */}
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                    {plan.name}
-                  </h3>
-                  <p className="text-gray-600 mb-6">{plan.description}</p>
-
-                  {/* Price */}
-                  <div className="mb-8">
-                    <div className="flex items-baseline">
-                      <span className="text-4xl font-bold text-gray-900">
-                        {plan.price}
-                      </span>
-                      <span className="text-gray-500 ml-2">{plan.period}</span>
-                    </div>
-                  </div>
-
-                  {/* Features */}
-                  <ul className="space-y-4 mb-8">
-                    {plan.features.map((feature, featureIndex) => (
-                      <li
-                        key={featureIndex}
-                        className="flex items-start space-x-3"
-                      >
-                        <div
-                          className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5 ${
-                            plan.name === "Free"
-                              ? "bg-gray-100"
-                              : plan.name === "Premium"
-                              ? "bg-purple-100"
-                              : "bg-emerald-100"
-                          }`}
+                      {/* CTA Button */}
+                      {plan.buttonText === "Get Started" ? (
+                        <Link to={"/"} className="block">
+                          <button
+                            className={`w-full py-3 px-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] ${plan.buttonStyle}`}
+                          >
+                            <span className="flex items-center justify-center space-x-1">
+                              <span>{plan.buttonText}</span>
+                              <ArrowRight className="w-4 h-4" />
+                            </span>
+                          </button>
+                        </Link>
+                      ) : (
+                        <button
+                          onClick={() => handlePlanSelect(plan.name)}
+                          disabled={isLoading}
+                          className={`w-full py-3 px-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed ${plan.buttonStyle}`}
                         >
-                          <Check
-                            className={`w-3 h-3 ${
-                              plan.name === "Free"
-                                ? "text-gray-600"
-                                : plan.name === "Premium"
-                                ? "text-purple-600"
-                                : "text-emerald-600"
-                            }`}
-                          />
-                        </div>
-                        <span className="text-gray-700 font-medium">
-                          {feature}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  {/* CTA Button */}
-                  {plan.buttonText === "Get Started" ? (
-                    <Link to={"/"}>
-                      <button
-                        className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 ${plan.buttonStyle}`}
-                      >
-                        {plan.buttonText}
-                      </button>
-                    </Link>
-                  ) : (
-                    <button
-                      onClick={() => handlePlanSelect(plan.name)}
-                      className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 ${plan.buttonStyle}`}
-                    >
-                      {plan.buttonText}
-                    </button>
-                  )}
-                </div>
-              </div>
+                          {isLoading && plan.name === "Premium" ? (
+                            <span className="flex items-center justify-center space-x-2">
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                              <span>Loading...</span>
+                            </span>
+                          ) : (
+                            <span className="flex items-center justify-center space-x-1">
+                              <span>{plan.buttonText}</span>
+                              <ArrowRight className="w-4 h-4" />
+                            </span>
+                          )}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          ))}
+          </div>
         </div>
 
-        {/* Bottom Section */}
-        <div className="text-center mt-16">
-          <div className="bg-white rounded-2xl shadow-lg p-8 max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+        {/* Bottom CTA - Compact */}
+        <div className="text-center pb-8 pt-4">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-200 p-6 max-w-2xl mx-auto">
+            <h3 className="text-lg font-bold text-slate-900 mb-2">
               Need something different?
             </h3>
-            <p className="text-gray-600 mb-6">
-              We're here to help you find the perfect plan for your needs. Get
-              in touch with our team for custom solutions.
+            <p className="text-slate-600 text-sm mb-4">
+              Get in touch with our team for custom solutions and enterprise
+              pricing.
             </p>
-            <button className="bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105">
-              Talk to Sales
+            <button className="bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-900 hover:to-black text-white px-6 py-2.5 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 text-sm">
+              <span className="flex items-center justify-center space-x-1">
+                <span>Talk to Sales</span>
+                <ArrowRight className="w-3 h-3" />
+              </span>
             </button>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

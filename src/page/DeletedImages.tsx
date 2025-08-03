@@ -154,7 +154,7 @@ function DeletedImages() {
               {images.map((imageId) => (
                 <Card
                   key={imageId}
-                  className="group hover:shadow-lg transition-all duration-300 border-0 shadow-md hover:shadow-xl hover:-translate-y-1"
+                  className="group  transition-all duration-300 border-0 shadow-md hover:shadow-xl hover:-translate-y-1"
                 >
                   <CardContent className="p-0">
                     {/* Image Container */}
