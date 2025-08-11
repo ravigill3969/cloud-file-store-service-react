@@ -19,11 +19,13 @@ import {
   X,
   AlertCircle,
   FolderOpen,
+  Edit,
 } from "lucide-react";
 import Nav from "@/components/Nav";
 import { useDeleteImage, useGetAllFilesWithUserID } from "@/api/file";
 import type { ImageData } from "@/api/APITypesFile";
 import { Link } from "react-router";
+import DimensionPopup from "@/components/DimensionPopup";
 
 const base_url = import.meta.env.VITE_BACKEND_URL;
 
@@ -31,6 +33,7 @@ const Pic: React.FC = () => {
   const [images, setImages] = useState<ImageData[]>([]);
   const [selectedImage, setSelectedImage] = useState<ImageData | null>(null);
   const [deletingImages, setDeletingImages] = useState<Set<string>>(new Set());
+  const [showEdit, setShowEdit] = useState(false);
 
   const { mutate } = useDeleteImage();
   const { data, isLoading, error } = useGetAllFilesWithUserID();
@@ -190,6 +193,7 @@ const Pic: React.FC = () => {
   return (
     <>
       <Nav />
+
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
         <div className="container mx-auto px-6 py-8">
           {/* Header Section */}
@@ -240,6 +244,13 @@ const Pic: React.FC = () => {
                   key={image.id || index}
                   className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-0 shadow-md hover:-translate-y-1"
                 >
+                  {showEdit && (
+                    <DimensionPopup
+                      open={showEdit}
+                      onOpenChange={setShowEdit}
+                      iid={image.id}
+                    />
+                  )}
                   <div className="relative aspect-square overflow-hidden bg-slate-100">
                     <img
                       src={`${base_url}/api/file/get-file/${image.id}`}
@@ -307,6 +318,15 @@ const Pic: React.FC = () => {
                       >
                         <Info className="h-4 w-4 mr-1" />
                         View
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowEdit(!showEdit)}
+                        className="flex-1 text-yellow-600 border-yellow-300 hover:bg-yellow-50"
+                      >
+                        <Edit className="h-4 w-4 mr-1" />
+                        Edit
                       </Button>
                       <Button
                         variant="outline"

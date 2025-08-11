@@ -192,3 +192,42 @@ export function useDeleteDeletedImagesPermanently() {
   });
   return mutate;
 }
+type EditImageParams = {
+  width: string;
+  height: string;
+  iid: string;
+};
+
+export function useEditImage() {
+  const editImage = async ({
+    width,
+    height,
+    iid,
+  }: EditImageParams): Promise<{ url: string }> => {
+    const res = await fetch(
+      `${base_url}/api/file/edit/${iid}/?width=${width}&height=${height}`,
+      {
+        method: "POST",
+        credentials: "include",
+      }
+    );
+    const response = await res.json();
+
+    if (!res.ok) {
+      const err: APIError = {
+        message: response.message,
+        status: response.status,
+      };
+      throw err;
+    }
+
+    return res;
+  };
+
+  const m = useMutation({
+    mutationFn: editImage,
+    mutationKey: ["editImage"],
+  });
+
+  return m;
+}
