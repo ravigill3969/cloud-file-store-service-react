@@ -11,6 +11,7 @@ import Upload from "./page/Upload";
 import Success from "./page/Success";
 import RateLimitPage from "./page/RateLimiting";
 import DeletedImages from "./page/DeletedImages";
+import Video from "./page/Video";
 
 function App() {
   return (
@@ -64,6 +65,14 @@ function App() {
         element={
           <ProtectedAuth>
             <Upload />
+          </ProtectedAuth>
+        }
+      />
+      <Route
+        path="/video"
+        element={
+          <ProtectedAuth>
+            <Video />
           </ProtectedAuth>
         }
       />

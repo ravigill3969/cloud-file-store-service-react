@@ -192,6 +192,7 @@ export function useDeleteDeletedImagesPermanently() {
   });
   return mutate;
 }
+
 type EditImageParams = {
   width: string;
   height: string;

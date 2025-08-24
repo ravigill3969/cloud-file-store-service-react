@@ -14,6 +14,7 @@ import {
   Image,
   Upload,
   ImageIcon,
+  Video,
 } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -85,6 +86,15 @@ export default function Nav() {
                 >
                   <Settings className="w-4 h-4 mr-2" />
                   Profile
+                </Button>
+              </Link>
+              <Link to={"/video"}>
+                <Button
+                  variant="ghost"
+                  className="text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
+                >
+                  <Video className="w-4 h-4 mr-2" />
+                  Video
                 </Button>
               </Link>
               <Link to={"/my-images"}>
@@ -197,6 +207,15 @@ export default function Nav() {
                   Profile
                 </Button>
               </Link>
+              <Link to={"/video"}>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
+                >
+                  <Video className="w-4 h-4 mr-2" />
+                  Video
+                </Button>
+              </Link>
               <Link to={"/my-images"}>
                 <Button
                   variant="ghost"
@@ -206,6 +225,7 @@ export default function Nav() {
                   My-images
                 </Button>
               </Link>
+
               <Link to={"/upload"}>
                 <Button
                   variant="ghost"
