@@ -1,6 +1,7 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { base_url } from "./API";
 import type { APIError } from "./APITypesUser";
+import type { VideoApiResponse } from "./APITypesVideo";
 
 export const useUploadVideo = () => {
   const uploadVideo = async (files: File[]) => {
@@ -36,4 +37,32 @@ export const useUploadVideo = () => {
   });
 
   return mutate;
+};
+
+export const useGetUploadedVideosWithUserID = () => {
+  const getUploadedVIdeosWithUserID = async (): Promise<VideoApiResponse> => {
+    const res = await fetch(`${base_url}/api/video/get`, {
+      credentials: "include",
+    });
+
+    const response = await res.json();
+
+    if (!res.ok) {
+      const err: APIError = {
+        message: response.message,
+        status: response.status,
+      };
+
+      throw err;
+    }
+
+    return response;
+  };
+
+  const query = useQuery({
+    queryKey: ["getUploadedVIdeosWithUserID"],
+    queryFn: getUploadedVIdeosWithUserID,
+  });
+
+  return query;
 };

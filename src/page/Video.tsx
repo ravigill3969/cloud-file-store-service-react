@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Play,
   Download,
@@ -14,35 +14,39 @@ import {
   List,
   Trash2,
 } from "lucide-react";
+import Nav from "@/components/Nav";
+import { useGetUploadedVideosWithUserID } from "@/api/video";
 
 // Video data interface matching your database structure
 interface VideoData {
-  id: string;
-  user_id: string;
-  s3_key: string;
+  vid: string;
   original_filename: string;
   mime_type: string;
   file_size_bytes: number;
-  upload_date: string;
   url: string;
 }
 
-// Props interface for the component
-interface VideoProps {
-  videos?: VideoData[];
-}
-
-function Video({ videos = [] }: VideoProps) {
+function Video() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchTerm, setSearchTerm] = useState("");
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
+  const [videos, setVideos] = useState<VideoData[] | []>([]);
+
+  // const formatDate = (dateString: string) => {
+  //   return new Date(dateString).toLocaleDateString("en-US", {
+  //     month: "short",
+  //     day: "numeric",
+  //     year: "numeric",
+  //   });
+  // };
+
+  const { data, isSuccess } = useGetUploadedVideosWithUserID();
+
+  useEffect(() => {
+    if (isSuccess && data && data.data) {
+      setVideos(data.data);
+    }
+  }, [data, isSuccess]);
 
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return "0 Bytes";
@@ -67,6 +71,7 @@ function Video({ videos = [] }: VideoProps) {
 
   return (
     <>
+      <Nav />
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/20 to-blue-50/20">
         {/* Header */}
         <div className="bg-white/80 backdrop-blur-sm border-b border-slate-200/50 sticky top-0 z-10">
@@ -186,14 +191,14 @@ function Video({ videos = [] }: VideoProps) {
                     Recent Uploads
                   </p>
                   <p className="text-2xl font-bold text-slate-900 mt-1">
-                    {
-                      videos.filter((v) => {
-                        const uploadDate = new Date(v.upload_date);
-                        const weekAgo = new Date();
-                        weekAgo.setDate(weekAgo.getDate() - 7);
-                        return uploadDate > weekAgo;
+                    {/* {
+                      // videos.filter(() => {
+                      //   // const uploadDate = new Date(Date.now());
+                      //   const weekAgo = new Date();
+                      //   weekAgo.setDate(weekAgo.getDate() - 7);
+                      //   return uploadDate > weekAgo;
                       }).length
-                    }
+                    } */}
                   </p>
                 </div>
                 <div className="p-3 bg-amber-100 rounded-xl">
@@ -229,7 +234,7 @@ function Video({ videos = [] }: VideoProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredVideos.map((video) => (
                     <div
-                      key={video.id}
+                      key={video.vid}
                       className="group bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200/50 overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
                     >
                       {/* Video Preview Area */}
@@ -261,7 +266,7 @@ function Video({ videos = [] }: VideoProps) {
                         <div className="grid grid-cols-2 gap-4 text-sm text-slate-600 mb-4">
                           <div className="flex items-center space-x-2">
                             <Calendar className="w-4 h-4" />
-                            <span>{formatDate(video.upload_date)}</span>
+                            {/* <span>{formatDate(video.upload_date)}</span> */}
                           </div>
                           <div className="flex items-center space-x-2">
                             <Clock className="w-4 h-4" />
@@ -293,7 +298,7 @@ function Video({ videos = [] }: VideoProps) {
                   <div className="divide-y divide-slate-200/50">
                     {filteredVideos.map((video) => (
                       <div
-                        key={video.id}
+                        key={video.vid}
                         className="flex items-center p-6 hover:bg-slate-50/50 transition-colors group"
                       >
                         <div className="flex-shrink-0 w-16 h-12 bg-gradient-to-br from-slate-200 to-slate-300 rounded-lg flex items-center justify-center mr-4">
@@ -305,7 +310,7 @@ function Video({ videos = [] }: VideoProps) {
                             {video.original_filename.replace(/\.[^/.]+$/, "")}
                           </h3>
                           <div className="flex items-center space-x-4 text-sm text-slate-600">
-                            <span>{formatDate(video.upload_date)}</span>
+                            {/* <span>{formatDate(video.upload_date)}</span> */}
                             <span>{formatFileSize(video.file_size_bytes)}</span>
                             <span>{video.mime_type}</span>
                           </div>
