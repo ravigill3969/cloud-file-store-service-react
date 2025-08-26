@@ -66,3 +66,32 @@ export const useGetUploadedVideosWithUserID = () => {
 
   return query;
 };
+
+export const useDeleteVideoWithCookie = () => {
+  const deleteVideoWithCookie = async (
+    vid: string
+  ): Promise<{ message: string; status: string }> => {
+    const res = await fetch(`${base_url}/api/video/delete?vid=${vid}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+    const response = await res.json();
+
+    if (!res.ok) {
+      const err: APIError = {
+        message: response.message,
+        status: response.status,
+      };
+
+      throw err;
+    }
+
+    return response;
+  };
+  const m = useMutation({
+    mutationFn: deleteVideoWithCookie,
+    mutationKey: ["deleteVideoWithCookie"],
+  });
+
+  return m;
+};

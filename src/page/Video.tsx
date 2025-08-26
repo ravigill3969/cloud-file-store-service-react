@@ -15,7 +15,10 @@ import {
   Trash2,
 } from "lucide-react";
 import Nav from "@/components/Nav";
-import { useGetUploadedVideosWithUserID } from "@/api/video";
+import {
+  useDeleteVideoWithCookie,
+  useGetUploadedVideosWithUserID,
+} from "@/api/video";
 
 // Video data interface matching your database structure
 interface VideoData {
@@ -32,13 +35,7 @@ function Video() {
 
   const [videos, setVideos] = useState<VideoData[] | []>([]);
 
-  // const formatDate = (dateString: string) => {
-  //   return new Date(dateString).toLocaleDateString("en-US", {
-  //     month: "short",
-  //     day: "numeric",
-  //     year: "numeric",
-  //   });
-  // };
+  const { mutate } = useDeleteVideoWithCookie();
 
   const { data, isSuccess } = useGetUploadedVideosWithUserID();
 
@@ -283,7 +280,10 @@ function Video() {
                             <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
                               <Download className="w-4 h-4" />
                             </button>
-                            <button className="p-2 hover:bg-red-100 hover:text-red-600 rounded-lg transition-colors">
+                            <button
+                              onClick={() => mutate(video.vid)}
+                              className="p-2 hover:bg-red-100 hover:text-red-600 rounded-lg transition-colors"
+                            >
                               <Trash2 className="w-4 h-4" />
                             </button>
                           </div>
@@ -323,7 +323,10 @@ function Video() {
                           <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
                             <Download className="w-4 h-4 text-slate-600" />
                           </button>
-                          <button className="p-2 hover:bg-red-100 hover:text-red-600 rounded-lg transition-colors">
+                          <button
+                            onClick={() => mutate(video.vid)}
+                            className="p-2 hover:bg-red-100 hover:text-red-600 rounded-lg transition-colors"
+                          >
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
