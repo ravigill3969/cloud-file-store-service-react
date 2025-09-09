@@ -1,14 +1,37 @@
-import React, { useState, useRef } from "react";
-import { Upload, Video, X, Clock, Shield, Zap } from "lucide-react";
-import { useUploadVideo } from "@/api/video";
+import React, { useState, useRef, useEffect } from "react";
+import {
+  Upload,
+  Video,
+  X,
+  Clock,
+  Shield,
+  Zap,
+  AlertCircle,
+  CheckCircle,
+  Image,
+} from "lucide-react";
+import {
+  allowedVideoTypes,
+  supportedVideoFormats,
+  useUploadVideo,
+} from "@/api/video";
+import type { UploadVideoFromUIResponse } from "@/api/APITypesVideo";
 
 function VideoUpload() {
   const [dragActive, setDragActive] = useState<boolean>(false);
   const [files, setFiles] = useState<File[]>([]);
+  const [res, setRes] = useState<UploadVideoFromUIResponse>();
   const [uploading, setUploading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { mutate } = useUploadVideo();
+  const { mutate, isSuccess, isPending, data } = useUploadVideo();
+
+  useEffect(() => {
+    if (isSuccess) {
+      setFiles([]);
+      setRes(data);
+    }
+  }, [isSuccess, data]);
 
   const handleDrag = (e: React.DragEvent<HTMLDivElement>): void => {
     e.preventDefault();
@@ -20,25 +43,35 @@ function VideoUpload() {
     }
   };
 
+  const isValidVideo = (file: File): boolean => {
+    return allowedVideoTypes.includes(file.type);
+  };
+
   const handleDrop = (e: React.DragEvent<HTMLDivElement>): void => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
 
     const droppedFiles = Array.from(e.dataTransfer.files);
-    const videoFiles = droppedFiles.filter((file) =>
-      file.type.startsWith("video/")
-    );
+    const videoFiles = droppedFiles.filter(isValidVideo);
 
     if (videoFiles.length > 0) {
       addFiles(videoFiles);
+    } else {
+      alert("Unsupported video format. Please upload MP4, WebM, MOV, etc.");
     }
   };
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
     if (e.target.files) {
       const selectedFiles = Array.from(e.target.files);
-      addFiles(selectedFiles);
+      const videoFiles = selectedFiles.filter(isValidVideo);
+
+      if (videoFiles.length > 0) {
+        addFiles(videoFiles);
+      } else {
+        alert("Unsupported video format. Please upload MP4, WebM, MOV, etc.");
+      }
     }
   };
 
@@ -154,8 +187,8 @@ function VideoUpload() {
 
             <div className="mt-6 text-sm text-gray-500">
               <p>
-                Maximum file size: 2GB per file. Supported formats: MP4, AVI,
-                MOV, WMV, MKV, WebM
+                Maximum file size: <strong>500MB</strong> per file. Supported
+                formats: {supportedVideoFormats.join(", ")}
               </p>
             </div>
           </div>
@@ -171,9 +204,12 @@ function VideoUpload() {
                 {files.length > 0 && !uploading && (
                   <button
                     onClick={startUpload}
-                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200"
+                    disabled={isPending}
+                    className={`px-6 py-2  hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 ${
+                      isPending ? "bg-blue-400" : "bg-blue-600"
+                    }`}
                   >
-                    Start Upload
+                    {isPending ? "Uploding..." : "Start Upload"}
                   </button>
                 )}
               </div>
@@ -197,16 +233,17 @@ function VideoUpload() {
                           {formatFileSize(file.size)}
                         </p>
 
-                        {uploading && (
-                          <div className="mt-2">
-                            <div className="w-full bg-gray-200 rounded-full h-1.5">
-                              <div className="bg-blue-600 h-1.5 rounded-full transition-all duration-300 w-1/2" />
+                        {uploading ||
+                          (isPending && (
+                            <div className="mt-2">
+                              <div className="w-full bg-gray-200 rounded-full h-1.5">
+                                <div className="bg-blue-600 h-1.5 rounded-full transition-all duration-300 w-1/2" />
+                              </div>
+                              <p className="text-xs text-gray-600 mt-1">
+                                Uploading...
+                              </p>
                             </div>
-                            <p className="text-xs text-gray-600 mt-1">
-                              Uploading...
-                            </p>
-                          </div>
-                        )}
+                          ))}
                       </div>
 
                       <div className="flex items-center space-x-2 flex-shrink-0">
@@ -222,6 +259,67 @@ function VideoUpload() {
                     </div>
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {res && (
+            <div className="mt-8 mb-8 bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-slate-200/50 overflow-hidden">
+              <div className="p-8 space-y-6">
+                {/* Uploaded Files */}
+                <div className="bg-green-50/50 rounded-2xl p-6 border border-green-200/50">
+                  <div className="flex items-center mb-4">
+                    <div className="p-2 bg-green-100 rounded-lg mr-3">
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                    </div>
+                    <h3 className="text-lg font-bold text-green-900">
+                      Successfully Uploaded
+                    </h3>
+                  </div>
+                  {res.success?.length ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      {res.success.map((file, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-center p-3 bg-white/70 rounded-lg border border-green-200/50"
+                        >
+                          <div className="p-2 bg-green-100 rounded-lg mr-3">
+                            <Image className="w-4 h-4 text-green-600" />
+                          </div>
+                          <span className="text-sm font-medium text-green-800 truncate">
+                            {file}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-green-700 text-sm">No files uploaded</p>
+                  )}
+                </div>
+
+                {/* Failed Files */}
+                {res.error?.length > 0 && (
+                  <div className="bg-red-50/50 rounded-2xl p-6 border border-red-200/50">
+                    <div className="flex items-center mb-4">
+                      <div className="p-2 bg-red-100 rounded-lg mr-3">
+                        <AlertCircle className="w-5 h-5 text-red-600" />
+                      </div>
+                      <h3 className="text-lg font-bold text-red-900">
+                        Upload Errors
+                      </h3>
+                    </div>
+                    <div className="space-y-2">
+                      {res.error.map((err, idx) => (
+                        <div
+                          key={idx}
+                          className="p-3 bg-white/70 rounded-lg border border-red-200/50"
+                        >
+                          <span className="text-sm text-red-800">{err}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Image, Video } from "lucide-react";
 
-import VideoUpload from "./VideoUpload";
-import ImageUpload from "./ImageUpload";
+import VideoUpload from "../components/VideoUpload";
+import ImageUpload from "../components/ImageUpload";
 import Nav from "@/components/Nav";
 
 const Upload: React.FC = () => {
@@ -40,7 +40,6 @@ const Upload: React.FC = () => {
         </div>
       </div>
 
-      {/* Content based on selection */}
       {currentView === "video" ? <VideoUpload /> : <ImageUpload />}
     </>
   );

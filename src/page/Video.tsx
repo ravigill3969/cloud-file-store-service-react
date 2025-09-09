@@ -3,21 +3,18 @@ import {
   Play,
   Download,
   Share2,
-  MoreHorizontal,
   Calendar,
   Clock,
   Eye,
   Film,
   Search,
   Filter,
-  Grid3X3,
-  List,
   Trash2,
 } from "lucide-react";
 import Nav from "@/components/Nav";
 import {
   useDeleteVideoWithCookie,
-  useGetUploadedVideosWithUserID,
+  useGetUploadedVideosWithCookie,
 } from "@/api/video";
 
 // Video data interface matching your database structure
@@ -30,14 +27,11 @@ interface VideoData {
 }
 
 function Video() {
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchTerm, setSearchTerm] = useState("");
-
   const [videos, setVideos] = useState<VideoData[] | []>([]);
-
   const { mutate } = useDeleteVideoWithCookie();
 
-  const { data, isSuccess } = useGetUploadedVideosWithUserID();
+  const { data, isSuccess } = useGetUploadedVideosWithCookie();
 
   useEffect(() => {
     if (isSuccess && data && data.data) {
@@ -53,10 +47,6 @@ function Video() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
   };
 
-  const getFileExtension = (filename: string) => {
-    return filename.split(".").pop()?.toUpperCase() || "VIDEO";
-  };
-
   const filteredVideos = videos.filter((video) =>
     video.original_filename.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -65,6 +55,14 @@ function Video() {
     (acc, video) => acc + video.file_size_bytes,
     0
   );
+
+  const deleteVideo = (id: string) => {
+    mutate(id, {
+      onSuccess: () => {
+        setVideos((prev) => prev.filter((video) => video.vid !== id));
+      },
+    });
+  };
 
   return (
     <>
@@ -81,30 +79,6 @@ function Video() {
                 <p className="text-slate-600">
                   Manage and view your uploaded video content
                 </p>
-              </div>
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2 bg-slate-100 rounded-lg p-1">
-                  <button
-                    onClick={() => setViewMode("grid")}
-                    className={`p-2 rounded-md transition-all duration-200 ${
-                      viewMode === "grid"
-                        ? "bg-white text-purple-600 shadow-sm"
-                        : "text-slate-600 hover:text-slate-900"
-                    }`}
-                  >
-                    <Grid3X3 className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => setViewMode("list")}
-                    className={`p-2 rounded-md transition-all duration-200 ${
-                      viewMode === "list"
-                        ? "bg-white text-purple-600 shadow-sm"
-                        : "text-slate-600 hover:text-slate-900"
-                    }`}
-                  >
-                    <List className="w-4 h-4" />
-                  </button>
-                </div>
               </div>
             </div>
 
@@ -226,116 +200,46 @@ function Video() {
 
           {/* Video Grid/List */}
           {filteredVideos.length > 0 && (
-            <>
-              {viewMode === "grid" ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredVideos.map((video) => (
-                    <div
-                      key={video.vid}
-                      className="group bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200/50 overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
-                    >
-                      {/* Video Preview Area */}
-                      <div className="relative aspect-video bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center">
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                        <div className="relative z-10 flex flex-col items-center space-y-3">
-                          <div className="p-4 bg-white/20 backdrop-blur-sm rounded-full group-hover:bg-white/30 transition-colors cursor-pointer">
-                            <Play className="w-8 h-8 text-white" />
-                          </div>
-                          <div className="px-3 py-1 bg-black/50 backdrop-blur-sm rounded-full">
-                            <span className="text-white text-sm font-medium">
-                              {getFileExtension(video.original_filename)}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200/50 overflow-hidden">
+              <div className="divide-y divide-slate-200/50">
+                {filteredVideos.map((video) => (
+                  <div
+                    key={video.vid}
+                    className="flex items-center p-6 hover:bg-slate-50/50 transition-colors group"
+                  >
+                    <div className="flex-shrink-0 w-16 h-12 bg-gradient-to-br from-slate-200 to-slate-300 rounded-lg flex items-center justify-center mr-4">
+                      <Play className="w-6 h-6 text-slate-600" />
+                    </div>
 
-                      {/* Video Info */}
-                      <div className="p-6">
-                        <div className="flex items-start justify-between mb-3">
-                          <h3 className="font-bold text-slate-900 text-lg leading-tight group-hover:text-purple-600 transition-colors line-clamp-2">
-                            {video.original_filename.replace(/\.[^/.]+$/, "")}
-                          </h3>
-                          <button className="p-1 text-slate-400 hover:text-slate-600 opacity-0 group-hover:opacity-100 transition-all">
-                            <MoreHorizontal className="w-5 h-5" />
-                          </button>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4 text-sm text-slate-600 mb-4">
-                          <div className="flex items-center space-x-2">
-                            <Calendar className="w-4 h-4" />
-                            {/* <span>{formatDate(video.upload_date)}</span> */}
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Clock className="w-4 h-4" />
-                            <span>{formatFileSize(video.file_size_bytes)}</span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center justify-between text-xs text-slate-500">
-                          <span>{video.mime_type}</span>
-                          <div className="flex items-center space-x-1">
-                            <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
-                              <Share2 className="w-4 h-4" />
-                            </button>
-                            <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
-                              <Download className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => mutate(video.vid)}
-                              className="p-2 hover:bg-red-100 hover:text-red-600 rounded-lg transition-colors"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-slate-900 truncate mb-1">
+                        {video.original_filename.replace(/\.[^/.]+$/, "")}
+                      </h3>
+                      <div className="flex items-center space-x-4 text-sm text-slate-600">
+                        {/* <span>{formatDate(video.upload_date)}</span> */}
+                        <span>{formatFileSize(video.file_size_bytes)}</span>
+                        <span>{video.mime_type}</span>
                       </div>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                /* List View */
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-200/50 overflow-hidden">
-                  <div className="divide-y divide-slate-200/50">
-                    {filteredVideos.map((video) => (
-                      <div
-                        key={video.vid}
-                        className="flex items-center p-6 hover:bg-slate-50/50 transition-colors group"
+
+                    <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
+                        <Share2 className="w-4 h-4 text-slate-600" />
+                      </button>
+                      <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
+                        <Download className="w-4 h-4 text-slate-600" />
+                      </button>
+                      <button
+                        onClick={() => deleteVideo(video.vid)}
+                        className="p-2 hover:bg-red-100 hover:text-red-600 rounded-lg transition-colors"
                       >
-                        <div className="flex-shrink-0 w-16 h-12 bg-gradient-to-br from-slate-200 to-slate-300 rounded-lg flex items-center justify-center mr-4">
-                          <Play className="w-6 h-6 text-slate-600" />
-                        </div>
-
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-slate-900 truncate mb-1">
-                            {video.original_filename.replace(/\.[^/.]+$/, "")}
-                          </h3>
-                          <div className="flex items-center space-x-4 text-sm text-slate-600">
-                            {/* <span>{formatDate(video.upload_date)}</span> */}
-                            <span>{formatFileSize(video.file_size_bytes)}</span>
-                            <span>{video.mime_type}</span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
-                            <Share2 className="w-4 h-4 text-slate-600" />
-                          </button>
-                          <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
-                            <Download className="w-4 h-4 text-slate-600" />
-                          </button>
-                          <button
-                            onClick={() => mutate(video.vid)}
-                            className="p-2 hover:bg-red-100 hover:text-red-600 rounded-lg transition-colors"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              )}
-            </>
+                ))}
+              </div>
+            </div>
           )}
         </div>
       </div>{" "}
@@ -344,21 +248,3 @@ function Video() {
 }
 
 export default Video;
-
-<div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
-  <h1 className="text-2xl mb-4">Video Player</h1>
-  <video
-    controls
-    width="720"
-    height="405"
-    className="rounded-lg shadow-lg bg-black"
-    crossOrigin="anonymous"
-    preload="none"
-  >
-    <source
-      src="http://localhost:8080/api/video/watch/?vid=2dc4624c-b729-4f76-a236-9d59aa96e5c4"
-      type="video/mp4"
-    />
-    Your browser does not support the video tag.
-  </video>
-</div>;

@@ -19,8 +19,9 @@ import {
   AlertCircle,
   FolderOpen,
 } from "lucide-react";
-import { useUploadFiles } from "@/api/file";
+import { allowedImageTypes, useUploadFiles } from "@/api/file";
 import type { UploadFileResponse } from "@/api/APITypesFile";
+import toast from "react-hot-toast";
 
 function ImageUpload() {
   const [dragActive, setDragActive] = useState<boolean>(false);
@@ -67,6 +68,10 @@ function ImageUpload() {
     return formatFileSize(totalBytes);
   };
 
+  const isValidImage = (file: File): boolean => {
+    return allowedImageTypes.includes(file.type);
+  };
+
   const handleDrag = useCallback((e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -83,15 +88,31 @@ function ImageUpload() {
     setDragActive(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const newFiles = Array.from(e.dataTransfer.files);
-      setFiles((prev) => [...prev, ...newFiles]);
+      const droppedFiles = Array.from(e.dataTransfer.files);
+      const imageFiles = droppedFiles.filter(isValidImage);
+
+      if (imageFiles.length > 0) {
+        setFiles((prev) => [...prev, ...imageFiles]);
+      } else {
+        toast.error(
+          "Unsupported image format. Please upload JPEG, PNG, WebP, etc."
+        );
+      }
     }
   }, []);
 
   const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      const newFiles = Array.from(e.target.files);
-      setFiles((prev) => [...prev, ...newFiles]);
+      const selectedFiles = Array.from(e.target.files);
+      const imageFiles = selectedFiles.filter(isValidImage);
+
+      if (imageFiles.length > 0) {
+        setFiles((prev) => [...prev, ...imageFiles]);
+      } else {
+        toast.error(
+          "Unsupported image format. Please upload JPEG, PNG, WebP, etc."
+        );
+      }
     }
   };
 
@@ -135,7 +156,7 @@ function ImageUpload() {
             <div className="inline-flex items-center px-4 py-2 bg-amber-50 border border-amber-200 rounded-lg">
               <AlertCircle className="w-4 h-4 text-amber-600 mr-2" />
               <span className="text-amber-800 font-medium text-sm">
-                Daily upload limit: 5MB
+                Daily upload limit: 10MB
               </span>
             </div>
           </div>
@@ -365,7 +386,7 @@ function ImageUpload() {
               <div className="text-slate-600 text-sm">
                 <span className="font-medium">Maximum file size:</span> 10MB •
                 <span className="font-medium ml-1">Supported formats:</span>{" "}
-                JPEG, PNG, GIF
+                JPEG, PNG, GIF, WebP, SVG, BMP, TIFF, HEIC, HEIF, ICO, PSD
               </div>
             </div>
           </div>

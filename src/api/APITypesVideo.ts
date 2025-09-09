@@ -12,3 +12,14 @@ export type ApiResponse<T> = {
 };
 
 export type VideoApiResponse = ApiResponse<VideoItem>;
+
+export type UploadVideoFromUIResponse = {
+  error: string[];
+  success: string[];
+};
+
+
+export type DeleteVideoRes = {
+  status : string,
+  message : string
+}

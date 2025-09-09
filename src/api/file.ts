@@ -232,3 +232,20 @@ export function useEditImage() {
 
   return m;
 }
+
+export const allowedImageTypes = [
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+  "image/svg+xml",
+  "image/bmp",
+  "image/x-ms-bmp", // sometimes reported like this
+  "image/tiff",
+  "image/heic",
+  "image/heif",
+  "image/x-icon", // .ico
+  "image/vnd.microsoft.icon",
+  "image/vnd.adobe.photoshop", // .psd
+  "image/x-photoshop",
+];
