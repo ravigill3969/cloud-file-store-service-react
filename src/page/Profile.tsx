@@ -19,7 +19,7 @@ import {
 import Nav from "@/components/Nav";
 import type { GETUserData } from "@/api/APITypesUser";
 import { useUserContext } from "@/context/userContext";
-import { useUpdatePassword } from "@/api/auth";
+import { useUpdatePassword, useUpdateUserInfo } from "@/api/auth";
 import toast from "react-hot-toast";
 import { useCancelSubscription } from "@/api/stripe";
 
@@ -69,9 +69,15 @@ export default function Profile() {
     });
   };
 
-  const handleProfileUpdate = async () => {};
-
   const { mutate } = useUpdatePassword();
+  const { mutate: mutateUserInfo } = useUpdateUserInfo();
+
+  const handleProfileUpdate = async () => {
+    mutateUserInfo({
+      email: profileForm.email,
+      username: profileForm.username,
+    });
+  };
 
   const handlePasswordUpdate = async () => {
     setLoading({ password: true, profile: false });

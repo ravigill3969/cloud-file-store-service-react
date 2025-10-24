@@ -16,6 +16,7 @@ import {
   useDeleteVideoWithCookie,
   useGetUploadedVideosWithCookie,
 } from "@/api/video";
+import { useNavigate } from "react-router";
 
 // Video data interface matching your database structure
 interface VideoData {
@@ -29,6 +30,7 @@ interface VideoData {
 function Video() {
   const [searchTerm, setSearchTerm] = useState("");
   const [videos, setVideos] = useState<VideoData[] | []>([]);
+  const navigate = useNavigate();
   const { mutate } = useDeleteVideoWithCookie();
 
   const { data, isSuccess } = useGetUploadedVideosWithCookie();
@@ -61,6 +63,12 @@ function Video() {
       onSuccess: () => {
         setVideos((prev) => prev.filter((video) => video.vid !== id));
       },
+    });
+  };
+
+  const playVideo = (id: string) => {
+    navigate("/video-player", {
+      state: { link: `http://localhost:8080/api/video/watch/?vid=${id}` },
     });
   };
 
@@ -208,7 +216,10 @@ function Video() {
                     className="flex items-center p-6 hover:bg-slate-50/50 transition-colors group"
                   >
                     <div className="flex-shrink-0 w-16 h-12 bg-gradient-to-br from-slate-200 to-slate-300 rounded-lg flex items-center justify-center mr-4">
-                      <Play className="w-6 h-6 text-slate-600" />
+                      <Play
+                        onClick={() => playVideo(video.vid)}
+                        className="w-6 h-6 text-slate-600"
+                      />
                     </div>
 
                     <div className="flex-1 min-w-0">
@@ -227,7 +238,9 @@ function Video() {
                         <Share2 className="w-4 h-4 text-slate-600" />
                       </button>
                       <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
+                        {/* <Link to={video.url}> */}
                         <Download className="w-4 h-4 text-slate-600" />
+                        {/* </Link> */}
                       </button>
                       <button
                         onClick={() => deleteVideo(video.vid)}

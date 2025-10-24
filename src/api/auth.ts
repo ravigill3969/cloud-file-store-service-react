@@ -293,3 +293,44 @@ export const useUpdatePassword = () => {
   });
   return mutate;
 };
+
+export const useUpdateUserInfo = () => {
+  const updatePassword = async (data: {
+    username: string;
+    email: string;
+  }): Promise<{ status: "success"; message: string }> => {
+    const response = await fetch(`${base_url}/api/users/update-user-info`, {
+      method: "PUT",
+      credentials: "include",
+      headers: {
+        "Content-type": "application/json",
+      },
+
+      body: JSON.stringify(data),
+    });
+
+    const res = await response.json();
+
+    if (!response.ok) {
+      const err: APIError = {
+        message: res.message,
+        status: res.status,
+      };
+      throw err;
+    }
+
+    return res;
+  };
+
+  const mutate = useMutation({
+    mutationKey: ["updatePassword"],
+    mutationFn: updatePassword,
+    onSuccess(res) {
+      toast.success(res.message);
+    },
+    onError(err) {
+      toast.error(err.message);
+    },
+  });
+  return mutate;
+};

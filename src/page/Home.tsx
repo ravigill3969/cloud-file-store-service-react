@@ -87,7 +87,7 @@ export default function Home() {
           {/* Public Key Card */}
           <Card className="border-0 shadow-xl bg-white/50 backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
             <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 border-b border-green-100">
-              <CardTitle className="flex items-center text-green-800">
+              <CardTitle className="flex items-center text-green-800 mt-2">
                 <Globe className="w-5 h-5 mr-2" />
                 Public Key
                 <Badge className="ml-2 bg-green-100 text-green-800 hover:bg-green-200">
@@ -131,9 +131,9 @@ export default function Home() {
 
           {/* Secret Key Card */}
           <Card className="border-0 shadow-xl bg-white/50 backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-            <CardHeader className="bg-gradient-to-r from-red-50 to-orange-50 border-b border-red-100">
-              <CardTitle className="flex items-center text-red-800">
-                <Shield className="w-5 h-5 mr-2" />
+            <CardHeader className="bg-gradient-to-r  from-red-50 to-orange-50 border-b border-red-100">
+              <CardTitle className="flex items-center mt-2 text-red-800">
+                <Shield className="w-5 h-5 mr-2 " />
                 Secret Key
                 <Badge className="ml-2 bg-red-100 text-red-800 hover:bg-red-200">
                   Confidential

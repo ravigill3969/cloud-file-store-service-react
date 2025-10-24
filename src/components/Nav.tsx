@@ -70,15 +70,7 @@ export default function Nav() {
                 <Home className="w-4 h-4 mr-2" />
                 Dashboard
               </Button>
-              <Link to={"/"}>
-                <Button
-                  variant="ghost"
-                  className="text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
-                >
-                  <Key className="w-4 h-4 mr-2" />
-                  API Keys
-                </Button>
-              </Link>
+             
               <Link to={"/profile"}>
                 <Button
                   variant="ghost"

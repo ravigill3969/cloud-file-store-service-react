@@ -5,6 +5,7 @@ export interface ImageData {
   upload_date: string; // ISO 8601 datetime string
   width: number;
   height: number;
+  cdn_url: string;
 }
 
 export interface ImageApiResponse {

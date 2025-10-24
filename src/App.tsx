@@ -12,6 +12,7 @@ import Success from "./page/Success";
 import RateLimitPage from "./page/RateLimiting";
 import DeletedImages from "./page/DeletedImages";
 import Video from "./page/Video";
+import VideoPlayer from "./page/VideoPlayer";
 
 function App() {
   return (
@@ -77,6 +78,7 @@ function App() {
         }
       />
 
+      <Route path="/video-player" element={<VideoPlayer />} />
       <Route path="/success" element={<Success />} />
       <Route path="/rate-limit" element={<RateLimitPage />} />
     </Routes>
