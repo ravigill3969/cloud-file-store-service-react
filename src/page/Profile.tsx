@@ -12,7 +12,7 @@ import {
   Save,
   Eye,
   EyeOff,
-  Calendar,
+ 
   Activity,
   Crown,
 } from "lucide-react";
@@ -61,13 +61,13 @@ export default function Profile() {
     password: false,
   });
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
+  // const formatDate = (dateString: string) => {
+  //   return new Date(dateString).toLocaleDateString("en-US", {
+  //     year: "numeric",
+  //     month: "long",
+  //     day: "numeric",
+  //   });
+  // };
 
   const { mutate } = useUpdatePassword();
   const { mutate: mutateUserInfo } = useUpdateUserInfo();
@@ -143,10 +143,10 @@ export default function Profile() {
               <div className="flex items-center space-x-4">
                 {getAccountTypeBadge(userData.account_type)}
                 <div className="flex items-center text-indigo-100">
-                  <Calendar className="w-4 h-4 mr-1" />
+                  {/* <Calendar className="w-4 h-4 mr-1" />
                   <span className="text-sm">
                     Member since {formatDate(userData.created_at)}
-                  </span>
+                  </span> */}
                 </div>
               </div>
             </div>
