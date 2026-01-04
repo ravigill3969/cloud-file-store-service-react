@@ -33,6 +33,8 @@ export default function Profile() {
 
   const [userData, setUserData] = useState<GETUserData | undefined>();
 
+  console.log(userData)
+
   const { apiData } = useUserContext();
 
   const [profileForm, setProfileForm] = useState({

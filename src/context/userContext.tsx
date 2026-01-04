@@ -24,10 +24,18 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   const [loading, setLoading] = useState(true);
   useEffect(() => {
+    const publicRoutes = ["/register"];
+    const currentPath = window.location.pathname;
+
+    if (publicRoutes.includes(currentPath)) {
+      setLoading(false);
+      return;
+    }
+
     const tryFetchUserInfo = async () => {
       try {
-        if (data && data.data.length === 1 && isSuccess) {
-          setUserData(data.data[0]);
+        if (data && isSuccess) {
+          setUserData(data.data);
           setIsLoggedIn(true);
           setLoading(false);
         } else if (isError && !tokenRefreshed) {
@@ -35,7 +43,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           await refreshToken();
           setTokenRefreshed(true);
           refetch();
-          return;
         } else if (isError && tokenRefreshed) {
           navigate("/login");
           setUserData(undefined);
@@ -54,6 +61,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
     tryFetchUserInfo();
   }, [data, isError, navigate, isSuccess, tokenRefreshed, refetch]);
+
   return (
     <UserContext.Provider
       value={{

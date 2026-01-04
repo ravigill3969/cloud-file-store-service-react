@@ -48,7 +48,7 @@ export const useUploadVideo = () => {
 
 export const useGetUploadedVideosWithCookie = () => {
   const getUploadedVIdeosWithUserID = async (): Promise<VideoApiResponse> => {
-    const res = await fetch(`${base_url}/api/video/get`, {
+    const res = await fetch(`${base_url}/api/video/get-all`, {
       credentials: "include",
     });
 

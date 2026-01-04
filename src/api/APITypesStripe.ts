@@ -1,4 +1,6 @@
 export interface StripeCheckoutResponse {
   status: "success" | "error";
-  data: string[];
+  data: {
+    checkout_url: string;
+  };
 }

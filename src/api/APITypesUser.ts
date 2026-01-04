@@ -10,7 +10,7 @@ export type LoginInputT = {
 
 export interface ApiGETUser {
   status: "success";
-  data: GETUserData[];
+  data: GETUserData;
 }
 
 export type GETUserData = {
@@ -23,11 +23,9 @@ export type GETUserData = {
   edit_api_calls: number;
   post_api_calls: number;
   created_at: string;
-}
+};
 
 export type SecretKeyAPIRes = {
-  status : "success"
-  data : [string]
-}
-
-
+  status: "success";
+  data: string;
+};

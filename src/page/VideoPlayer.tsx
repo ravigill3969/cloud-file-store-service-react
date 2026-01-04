@@ -13,8 +13,11 @@ import {
   Maximize,
   RotateCcw,
   RotateCw,
+  X,
 } from "lucide-react";
-import { useLocation } from "react-router";
+import {  useLocation, useNavigate } from "react-router";
+import Nav from "@/components/Nav";
+import { Button } from "@/components/ui/button";
 
 const VideoPlayer: React.FC = () => {
   const [videoUrl, setVideoUrl] = useState<string>("");
@@ -34,11 +37,10 @@ const VideoPlayer: React.FC = () => {
   const location = useLocation();
   const link = location.state?.link;
 
-  console.log(link);
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (link && videoUrl !== link) {
-      console.log(link);
       setVideoUrl(link);
     }
   }, [link, videoUrl]);
@@ -170,7 +172,7 @@ const VideoPlayer: React.FC = () => {
 
     const newTime = Math.max(
       0,
-      Math.min(duration, video.currentTime + seconds)
+      Math.min(duration, video.currentTime + seconds),
     );
     video.currentTime = newTime;
     setCurrentTime(newTime);
@@ -196,170 +198,183 @@ const VideoPlayer: React.FC = () => {
   const volumeValue = isMuted ? 0 : volume;
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-gray-900 min-h-screen">
-      <div className="bg-white rounded-lg shadow-2xl overflow-hidden">
-        {/* Header */}
-        <div className="p-6 border-b border-gray-200">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">
-            Video Player
-          </h1>
-
-          {/* URL Input */}
-          <div className="space-y-4">
-            <div className="flex gap-2">
-              <input
-                type="url"
-                value={videoUrl}
-                onChange={handleVideoUrlChange}
-                placeholder="Enter video URL (mp4, webm, etc.)"
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <button
-                onClick={loadVideo}
-                disabled={!videoUrl.trim()}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+    <>
+      <Nav />
+      <div className="max-w-4xl mx-auto p-6 bg-gray-900 min-h-screen">
+        <div className="bg-white rounded-lg shadow-2xl overflow-hidden">
+          {/* Header */}
+          <div className="p-6 border-b border-gray-200">
+            <h1 className="text-2xl font-bold text-gray-800 mb-4 flex justify-between">
+              Video Player
+              <Button
+                onClick={() => {
+                  navigate("/video");
+                }}
               >
-                Load
-              </button>
+                <X />
+              </Button>
+            </h1>
+
+            {/* URL Input */}
+            <div className="space-y-4">
+              <div className="flex gap-2">
+                <input
+                  type="url"
+                  value={videoUrl}
+                  onChange={handleVideoUrlChange}
+                  placeholder="Enter video URL (mp4, webm, etc.)"
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <button
+                  onClick={loadVideo}
+                  disabled={!videoUrl.trim()}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                >
+                  Load
+                </button>
+              </div>
             </div>
+
+            {error && (
+              <div className="mt-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-lg">
+                {error}
+              </div>
+            )}
           </div>
 
-          {error && (
-            <div className="mt-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-lg">
-              {error}
+          {/* Video Container */}
+          {videoUrl && (
+            <div
+              ref={containerRef}
+              className={`relative bg-black ${
+                isFullscreen ? "h-screen" : "aspect-video"
+              }`}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={() => setShowControls(false)}
+            >
+              <video
+                ref={videoRef}
+                src={videoUrl}
+                crossOrigin="anonymous"
+                className="w-full h-full object-contain"
+                onClick={togglePlay}
+                preload="metadata"
+              />
+
+              {/* Controls Overlay */}
+              <div
+                className={`absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/50 to-transparent transition-opacity duration-300 ${
+                  showControls || !isPlaying ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                {/* Progress Bar */}
+                <div className="px-4 pb-2">
+                  <div
+                    className="w-full h-2 bg-gray-600 rounded-full cursor-pointer hover:h-3 transition-all"
+                    onClick={handleSeek}
+                    role="progressbar"
+                    aria-valuemin={0}
+                    aria-valuemax={duration}
+                    aria-valuenow={currentTime}
+                    aria-label="Video progress"
+                  >
+                    <div
+                      className="h-full bg-blue-500 rounded-full transition-all"
+                      style={{ width: `${progressPercentage}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Control Panel */}
+                <div className="flex items-center justify-between px-4 pb-4">
+                  <div className="flex items-center gap-4">
+                    {/* Play/Pause */}
+                    <button
+                      onClick={togglePlay}
+                      className="p-2 text-white hover:text-blue-400 transition-colors"
+                      aria-label={isPlaying ? "Pause video" : "Play video"}
+                    >
+                      {isPlaying ? <Pause size={24} /> : <Play size={24} />}
+                    </button>
+
+                    {/* Skip buttons */}
+                    <button
+                      onClick={() => skip(-10)}
+                      className="p-2 text-white hover:text-blue-400 transition-colors"
+                      title="Skip back 10s"
+                      aria-label="Skip back 10 seconds"
+                    >
+                      <RotateCcw size={20} />
+                    </button>
+                    <button
+                      onClick={() => skip(10)}
+                      className="p-2 text-white hover:text-blue-400 transition-colors"
+                      title="Skip forward 10s"
+                      aria-label="Skip forward 10 seconds"
+                    >
+                      <RotateCw size={20} />
+                    </button>
+
+                    {/* Volume Controls */}
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={toggleMute}
+                        className="text-white hover:text-blue-400 transition-colors"
+                        aria-label={isMuted ? "Unmute" : "Mute"}
+                      >
+                        {isMuted ? (
+                          <VolumeX size={20} />
+                        ) : (
+                          <Volume2 size={20} />
+                        )}
+                      </button>
+                      <input
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.05"
+                        value={volumeValue}
+                        onChange={handleVolumeChange}
+                        className="w-20 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
+                        aria-label="Volume control"
+                      />
+                    </div>
+
+                    {/* Time Display */}
+                    <div className="text-white text-sm font-mono">
+                      {formatTime(currentTime)} / {formatTime(duration)}
+                    </div>
+                  </div>
+
+                  {/* Fullscreen */}
+                  <button
+                    onClick={toggleFullscreen}
+                    className="p-2 text-white hover:text-blue-400 transition-colors"
+                    aria-label="Toggle fullscreen"
+                  >
+                    <Maximize size={20} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {!videoUrl && (
+            <div className="aspect-video bg-gray-100 flex items-center justify-center">
+              <div className="text-center text-gray-500">
+                <div className="text-4xl mb-2">📹</div>
+                <p className="text-lg">
+                  Enter a video URL above to start watching
+                </p>
+                <p className="text-sm mt-2">
+                  Supports MP4, WebM, and other HTML5 video formats
+                </p>
+              </div>
             </div>
           )}
         </div>
 
-        {/* Video Container */}
-        {videoUrl && (
-          <div
-            ref={containerRef}
-            className={`relative bg-black ${
-              isFullscreen ? "h-screen" : "aspect-video"
-            }`}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={() => setShowControls(false)}
-          >
-            <video
-              ref={videoRef}
-              src={videoUrl}
-              crossOrigin="anonymous"
-              className="w-full h-full object-contain"
-              onClick={togglePlay}
-              preload="metadata"
-            />
-
-            {/* Controls Overlay */}
-            <div
-              className={`absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/50 to-transparent transition-opacity duration-300 ${
-                showControls || !isPlaying ? "opacity-100" : "opacity-0"
-              }`}
-            >
-              {/* Progress Bar */}
-              <div className="px-4 pb-2">
-                <div
-                  className="w-full h-2 bg-gray-600 rounded-full cursor-pointer hover:h-3 transition-all"
-                  onClick={handleSeek}
-                  role="progressbar"
-                  aria-valuemin={0}
-                  aria-valuemax={duration}
-                  aria-valuenow={currentTime}
-                  aria-label="Video progress"
-                >
-                  <div
-                    className="h-full bg-blue-500 rounded-full transition-all"
-                    style={{ width: `${progressPercentage}%` }}
-                  />
-                </div>
-              </div>
-
-              {/* Control Panel */}
-              <div className="flex items-center justify-between px-4 pb-4">
-                <div className="flex items-center gap-4">
-                  {/* Play/Pause */}
-                  <button
-                    onClick={togglePlay}
-                    className="p-2 text-white hover:text-blue-400 transition-colors"
-                    aria-label={isPlaying ? "Pause video" : "Play video"}
-                  >
-                    {isPlaying ? <Pause size={24} /> : <Play size={24} />}
-                  </button>
-
-                  {/* Skip buttons */}
-                  <button
-                    onClick={() => skip(-10)}
-                    className="p-2 text-white hover:text-blue-400 transition-colors"
-                    title="Skip back 10s"
-                    aria-label="Skip back 10 seconds"
-                  >
-                    <RotateCcw size={20} />
-                  </button>
-                  <button
-                    onClick={() => skip(10)}
-                    className="p-2 text-white hover:text-blue-400 transition-colors"
-                    title="Skip forward 10s"
-                    aria-label="Skip forward 10 seconds"
-                  >
-                    <RotateCw size={20} />
-                  </button>
-
-                  {/* Volume Controls */}
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={toggleMute}
-                      className="text-white hover:text-blue-400 transition-colors"
-                      aria-label={isMuted ? "Unmute" : "Mute"}
-                    >
-                      {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-                    </button>
-                    <input
-                      type="range"
-                      min="0"
-                      max="1"
-                      step="0.05"
-                      value={volumeValue}
-                      onChange={handleVolumeChange}
-                      className="w-20 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
-                      aria-label="Volume control"
-                    />
-                  </div>
-
-                  {/* Time Display */}
-                  <div className="text-white text-sm font-mono">
-                    {formatTime(currentTime)} / {formatTime(duration)}
-                  </div>
-                </div>
-
-                {/* Fullscreen */}
-                <button
-                  onClick={toggleFullscreen}
-                  className="p-2 text-white hover:text-blue-400 transition-colors"
-                  aria-label="Toggle fullscreen"
-                >
-                  <Maximize size={20} />
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {!videoUrl && (
-          <div className="aspect-video bg-gray-100 flex items-center justify-center">
-            <div className="text-center text-gray-500">
-              <div className="text-4xl mb-2">📹</div>
-              <p className="text-lg">
-                Enter a video URL above to start watching
-              </p>
-              <p className="text-sm mt-2">
-                Supports MP4, WebM, and other HTML5 video formats
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <style>{`
+        <style>{`
         .slider::-webkit-slider-thumb {
           appearance: none;
           width: 16px;
@@ -382,7 +397,8 @@ const VideoPlayer: React.FC = () => {
           border-radius: 4px;
         }
       `}</style>
-    </div>
+      </div>
+    </>
   );
 };
 

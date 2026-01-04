@@ -96,9 +96,9 @@ export const useLogin = () => {
       toast.error(error.message);
     },
     onSuccess() {
+      navigate("/");
       invalidateQuery.invalidateQueries({ queryKey: ["getUserInfo"] });
       toast.success("success!");
-      navigate("/");
     },
   });
 
@@ -129,6 +129,7 @@ export const useGetUserInfo = () => {
 
       throw err;
     }
+
     return res;
   };
 
@@ -234,6 +235,8 @@ export async function refreshToken() {
   });
 
   const res = await response.json();
+
+  // console.log(res);
 
   if (res.statusCode === 429) {
     window.location.href = "/rate-limit";

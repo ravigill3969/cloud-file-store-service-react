@@ -42,7 +42,7 @@ export default function Home() {
   };
   useEffect(() => {
     if (isSuccess) {
-      setSecretKey(data.data[0]);
+      setSecretKey(data.data);
       setShowSecretKey(true);
     }
   }, [isSuccess, data]);
@@ -52,6 +52,8 @@ export default function Home() {
     setCopiedKey(keyType);
     setTimeout(() => setCopiedKey(""), 2000);
   };
+
+  console.log(apiData)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
