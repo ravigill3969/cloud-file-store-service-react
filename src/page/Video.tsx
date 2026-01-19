@@ -17,7 +17,7 @@ import {
   useGetUploadedVideosWithCookie,
 } from "@/api/video";
 import { useNavigate } from "react-router";
-import { base_url } from "./API";
+import { base_url } from "../api/API";
 // Video data interface matching your database structure
 interface VideoData {
   vid: string;
