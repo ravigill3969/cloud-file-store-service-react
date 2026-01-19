@@ -17,7 +17,7 @@ import {
   useGetUploadedVideosWithCookie,
 } from "@/api/video";
 import { useNavigate } from "react-router";
-
+import { base_url } from "./API";
 // Video data interface matching your database structure
 interface VideoData {
   vid: string;
@@ -50,12 +50,12 @@ function Video() {
   };
 
   const filteredVideos = videos.filter((video) =>
-    video.original_filename.toLowerCase().includes(searchTerm.toLowerCase())
+    video.original_filename.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const totalStorageUsed = videos.reduce(
     (acc, video) => acc + video.file_size_bytes,
-    0
+    0,
   );
 
   const deleteVideo = (id: string) => {
@@ -68,7 +68,7 @@ function Video() {
 
   const playVideo = (id: string) => {
     navigate("/video-player", {
-      state: { link: `http://localhost:8080/api/video/watch/?vid=${id}` },
+      state: { link: `${base_url}/api/video/watch/?vid=${id}` },
     });
   };
 
