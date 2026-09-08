@@ -200,8 +200,8 @@ const VideoPlayer: React.FC = () => {
   return (
     <>
       <Nav />
-      <div className="max-w-4xl mx-auto p-6 bg-gray-900 min-h-screen">
-        <div className="bg-white rounded-lg shadow-2xl overflow-hidden">
+      <div className="max-w-4xl mx-auto p-6  min-h-screen">
+        <div className="bg-white rounded-lg  shadow-2xl border-2 border-black overflow-hidden">
           {/* Header */}
           <div className="p-6 border-b border-gray-200">
             <h1 className="text-2xl font-bold text-gray-800 mb-4 flex justify-between">
